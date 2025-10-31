@@ -24,10 +24,11 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /* space for the fixed navbar so content starts below it */
+  padding-top: 56px;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #ffffff;
 }
 
 h1 {
