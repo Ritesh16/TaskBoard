@@ -31,11 +31,16 @@ export default function Register() {
                     <Form.Control
                       {...register('name')}
                       isInvalid={!!errors.name}
+                      aria-describedby="name-feedback"
                       size="lg"
                     />
                   </FloatingLabel>
-                  <Form.Control.Feedback type="invalid">
-                    {errors.name?.message}
+                  <Form.Control.Feedback
+                     id="name-feedback" 
+                     type="invalid" 
+                     className="d-block" 
+                     role="alert">
+                    {String(errors.name?.message ?? '')}
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formEmail">
@@ -46,12 +51,17 @@ export default function Register() {
                   >
                     <Form.Control
                       {...register('email')}
-                       isInvalid={!!errors.email}
+                      isInvalid={!!errors.email}
+                      aria-describedby="email-feedback"
                       size="lg"
                     />
                   </FloatingLabel>
-                   <Form.Control.Feedback type="invalid">
-                    {errors.email?.message}
+                   <Form.Control.Feedback 
+                    id="email-feedback" 
+                    type="invalid" 
+                    className="d-block" 
+                    role="alert">
+                    {String(errors.email?.message ?? '')}
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formPassword">
@@ -64,11 +74,12 @@ export default function Register() {
                       type="password"
                       {...register('password')}
                       isInvalid={!!errors.password}
+                      aria-describedby="password-feedback"
                       size="lg"
                     />
                   </FloatingLabel>
-                   <Form.Control.Feedback type="invalid">
-                    {errors.password?.message}
+                   <Form.Control.Feedback id="password-feedback" type="invalid" className="d-block" role="alert">
+                    {String(errors.password?.message ?? '')}
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formConfirmPassword">
@@ -81,11 +92,16 @@ export default function Register() {
                       type="password"
                       {...register('confirmPassword')}
                       isInvalid={!!errors.confirmPassword}
+                      aria-describedby="confirmPassword-feedback"
                       size="lg"
                     />
                   </FloatingLabel>
-                  <Form.Control.Feedback type="invalid">
-                    {errors.confirmPassword?.message}
+                  <Form.Control.Feedback 
+                    id="confirmPassword-feedback" 
+                    type="invalid" 
+                    className="d-block" 
+                    role="alert">
+                    {String(errors.confirmPassword?.message ?? '')}
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3">

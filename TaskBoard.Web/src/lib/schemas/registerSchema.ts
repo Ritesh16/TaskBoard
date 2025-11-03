@@ -6,10 +6,10 @@ export const passwordSchema = z.string()
   .max(20, 'Password must be at most 20 characters');
 
 export const registerSchema = z.object({
-    name: requiredString('name'),
+    name: requiredString('Name'),
     email: z.email(),
     password: passwordSchema,
-    confirmPassword: z.string()
+    confirmPassword: requiredString('Confirm Password')
 }).refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],

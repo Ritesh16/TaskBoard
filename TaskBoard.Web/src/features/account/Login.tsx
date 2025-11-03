@@ -3,22 +3,22 @@ import type { ChangeEvent, FormEvent } from "react";
 import { Button, Col, Container, FloatingLabel, Row } from "react-bootstrap";
 import Form from "react-bootstrap/esm/Form";
 import { useNavigate } from "react-router-dom";
+import { loginSchema, type LoginSchema } from "../../lib/schemas/loginSchema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 
 export default function Login() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: '', password: '' });
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Process form data (example: log or send to server)
-    console.log('Submitting', form);
-  };
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target as HTMLInputElement;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
+  
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginSchema>({
+      mode: 'onTouched',
+      resolver: zodResolver(loginSchema)
+    });
+  
+    const onSubmit = (data: LoginSchema) => {
+      console.log(1, data);
+    }
 
   const handleCancel = () => {
     navigate('/');
@@ -32,41 +32,52 @@ export default function Login() {
         <div className="border rounded-3 shadow-sm p-4 bg-white w-100 mx-3" style={{ maxWidth: 720 }}>
           <Row>
             <Col sm>
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit(onSubmit)}>
                 <Form.Group className="mb-3" controlId="formEmail">
                   <FloatingLabel
-                    controlId="floatingInput"
+                    controlId="floatingEmail"
                     label="Email Address"
                     className="mb-3"
                   >
                     <Form.Control
-                      type="email"
-                      name="email"
-                      value={form.email}
-                      onChange={handleChange}
-                      required
+                      {...register('email')}
+                      isInvalid={!!errors.email}
                       size="lg"
                     />
                   </FloatingLabel>
+                   <Form.Control.Feedback id="email-feedback" type="invalid" className="d-block" role="alert">
+                    {String(errors.email?.message ?? '')}
+                  </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formPassword">
                   <FloatingLabel
-                    controlId="floatingInput"
+                    controlId="floatingPassword"
                     label="Password"
                     className="mb-3"
                   >
                     <Form.Control
-                      type="password"
-                      name="password"
-                      value={form.password}
-                      onChange={handleChange}
+                     {...register("password")}
+                     isInvalid={!!errors.password}
                       size="lg"
                     />
                   </FloatingLabel>
+                   <Form.Control.Feedback id="password-feedback" type="invalid" className="d-block" role="alert">
+                    {String(errors.password?.message ?? '')}
+                  </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3">
-                  <Button type="submit" variant="primary">Submit</Button>
-                  <Button onClick={handleCancel} variant="secondary" style={{ marginLeft: '15px' }}>Cancel</Button>
+                  <Button 
+                    type="submit" 
+                    variant="primary"
+                    disabled={isSubmitting}>
+                    {isSubmitting ? 'Login in...': 'Login'}
+                  </Button>
+                  <Button 
+                    variant="outline-secondary" 
+                    style={{ marginLeft: '15px' }}
+                    onClick={handleCancel}>
+                    Cancel
+                  </Button>
                 </Form.Group>
               </Form>
             </Col>
