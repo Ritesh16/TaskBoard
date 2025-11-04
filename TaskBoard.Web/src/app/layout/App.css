@@ -63,6 +63,7 @@
 .center-content {
   width: 100%;
   max-width: 980px; /* keeps main area readable */
+  text-align: left;
 }
 
 /* Responsive: stack columns on small screens */
