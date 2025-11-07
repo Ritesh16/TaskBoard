@@ -1,0 +1,91 @@
+# .NET Core
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+.vs/
+.vscode/
+*.dbmdl
+*.jfm
+*.pfx
+*.publishsettings
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio
+.vs/
+*.ntvs*
+*.njsproj
+*.sln.docstates
+*.[Cc]ache
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# SQL Server files
+*.mdf
+*.ldf
+*.ndf
+
+# Business Intelligence projects
+*.rdl.data
+*.bim.layout
+*.bim_*.settings
+*.rptproj.rsuser
+*- [Bb]ackup.rdl
+*- [Bb]ackup ([0-9]).rdl
+*- [Bb]ackup ([0-9][0-9]).rdl
+
+# Microsoft Fakes
+FakesAssemblies/
+
+# Local development settings
+appsettings.Development.json
+appsettings.Local.json
+*.Development.json
+*.Local.json
+
+# User-specific files
+*.rsuser
+*.dtbcache.json
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Test Results
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+
+# Misc
+.DS_Store
+Thumbs.db
+*.swp
+*.*~
+project.lock.json
+.project
+.idea/
+*.sln.iml
+.cr/
+packages/
