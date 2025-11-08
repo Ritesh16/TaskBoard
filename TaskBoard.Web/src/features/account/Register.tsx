@@ -2,15 +2,23 @@ import { Button, Col, Container, FloatingLabel, Form, Row } from "react-bootstra
 import { registerSchema, type RegisterSchema } from "../../lib/schemas/registerSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useAccount } from "../../lib/hooks/useAccount";
 
 export default function Register() {
+  const { registerUser } = useAccount();
+
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<RegisterSchema>({
     mode: 'onTouched',
     resolver: zodResolver(registerSchema)
   });
 
-  const onSubmit = (data: RegisterSchema) => {
+  const onSubmit = async (data: RegisterSchema) => {
     console.log(1, data);
+    await registerUser.mutateAsync(data, {
+      onError: (error) => {
+        console.log(error);
+      }
+    });
   }
 
   return (
@@ -36,10 +44,10 @@ export default function Register() {
                     />
                   </FloatingLabel>
                   <Form.Control.Feedback
-                     id="name-feedback" 
-                     type="invalid" 
-                     className="d-block" 
-                     role="alert">
+                    id="name-feedback"
+                    type="invalid"
+                    className="d-block"
+                    role="alert">
                     {String(errors.name?.message ?? '')}
                   </Form.Control.Feedback>
                 </Form.Group>
@@ -56,10 +64,10 @@ export default function Register() {
                       size="lg"
                     />
                   </FloatingLabel>
-                   <Form.Control.Feedback 
-                    id="email-feedback" 
-                    type="invalid" 
-                    className="d-block" 
+                  <Form.Control.Feedback
+                    id="email-feedback"
+                    type="invalid"
+                    className="d-block"
                     role="alert">
                     {String(errors.email?.message ?? '')}
                   </Form.Control.Feedback>
@@ -78,7 +86,7 @@ export default function Register() {
                       size="lg"
                     />
                   </FloatingLabel>
-                   <Form.Control.Feedback id="password-feedback" type="invalid" className="d-block" role="alert">
+                  <Form.Control.Feedback id="password-feedback" type="invalid" className="d-block" role="alert">
                     {String(errors.password?.message ?? '')}
                   </Form.Control.Feedback>
                 </Form.Group>
@@ -96,26 +104,26 @@ export default function Register() {
                       size="lg"
                     />
                   </FloatingLabel>
-                  <Form.Control.Feedback 
-                    id="confirmPassword-feedback" 
-                    type="invalid" 
-                    className="d-block" 
+                  <Form.Control.Feedback
+                    id="confirmPassword-feedback"
+                    type="invalid"
+                    className="d-block"
                     role="alert">
                     {String(errors.confirmPassword?.message ?? '')}
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3">
-                  <Button 
-                    variant="primary" 
-                    type="submit" 
+                  <Button
+                    variant="primary"
+                    type="submit"
                     disabled={isSubmitting}>
-                    {isSubmitting ? 'Submitting...': 'Register'}
+                    {isSubmitting ? 'Submitting...' : 'Register'}
                   </Button>
-                  <Button 
-                    variant="outline-secondary" 
+                  <Button
+                    variant="outline-secondary"
                     style={{ marginLeft: '15px' }}
                     onClick={() => reset()} >
-                      Reset
+                    Reset
                   </Button>
                 </Form.Group>
               </Form>
