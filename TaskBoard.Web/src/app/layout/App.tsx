@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Outlet } from 'react-router-dom';
 import { useLocation } from 'react-router';
 import HomePage from '../../features/home/HomePage';
-import { Col, Container, ListGroup, Row } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 
 function App() {
   const location = useLocation();

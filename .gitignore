@@ -89,3 +89,13 @@ project.lock.json
 *.sln.iml
 .cr/
 packages/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+package-lock.json
+dist/
+build/

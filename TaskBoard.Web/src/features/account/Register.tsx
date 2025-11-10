@@ -13,7 +13,6 @@ export default function Register() {
   });
 
   const onSubmit = async (data: RegisterSchema) => {
-    console.log(1, data);
     await registerUser.mutateAsync(data, {
       onError: (error) => {
         console.log(error);
