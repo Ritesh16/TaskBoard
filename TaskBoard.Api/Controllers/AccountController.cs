@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TaskBoard.Domain.Account;
 using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Api.Controllers
@@ -9,10 +10,14 @@ namespace TaskBoard.Api.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService account;
+        private readonly IConfiguration configuration;
+        private readonly ITokenService tokenService;
 
-        public AccountController(IAccountService account)
+        public AccountController(IAccountService account, IConfiguration configuration, ITokenService tokenService)
         {
             this.account = account;
+            this.configuration = configuration;
+            this.tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -32,7 +37,14 @@ namespace TaskBoard.Api.Controllers
             var result = await account.Login(login);
             if (result)
             {
-                return Ok();
+                var token = tokenService.GenerateToken(login.Email);
+                var output = new AuthResponse
+                {
+                    Token = token,
+                    Email = login.Email
+                };
+
+                return Ok(output);
             }
             return Unauthorized();
         }
