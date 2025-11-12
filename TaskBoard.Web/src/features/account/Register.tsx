@@ -6,7 +6,7 @@ import { useAccount } from "../../lib/hooks/useAccount";
 
 export default function Register() {
   const { registerUser } = useAccount();
-
+ 
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<RegisterSchema>({
     mode: 'onTouched',
     resolver: zodResolver(registerSchema)
@@ -16,6 +16,7 @@ export default function Register() {
     await registerUser.mutateAsync(data, {
       onError: (error) => {
         console.log(error);
+        //toast.error(error);
       }
     });
   }

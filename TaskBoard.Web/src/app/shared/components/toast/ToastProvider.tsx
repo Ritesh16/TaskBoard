@@ -1,10 +1,18 @@
-import { useCallback, useMemo, useState, type PropsWithChildren } from 'react';
+import { createContext, useCallback, useMemo, useState, type PropsWithChildren } from 'react';
 import { ToastContainer } from 'react-bootstrap';
 import { CheckCircle, Info, AlertTriangle, XOctagon } from 'react-feather';
-import { ToastContext, generateToastId } from './context';
+import { type ToastOptions, type ToastRecord, type ToastPosition, type ToastAPI } from './types';
 import { ToastItem } from './ToastItem';
-import type { ToastOptions, ToastRecord, ToastPosition } from './types';
 import './toast.css';
+
+export const ToastContext = createContext<ToastAPI | null>(null);
+
+export function generateToastId(): string {
+    return typeof crypto !== 'undefined' && 'randomUUID' in crypto 
+        ? crypto.randomUUID() 
+        : `${Date.now()}-${Math.random()}`;
+}
+
 
 interface ToastProviderProps extends PropsWithChildren {
     position?: ToastPosition;

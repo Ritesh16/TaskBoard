@@ -1,6 +1,6 @@
 import { type PropsWithChildren } from 'react';
 import { Toast } from 'react-bootstrap';
-import type { ToastRecord } from './types';
+import  { type ToastRecord } from './types';
 
 interface ToastItemProps extends PropsWithChildren {
     toast: ToastRecord;

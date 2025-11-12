@@ -1,3 +1,2 @@
-export * from './ToastProvider';
-export * from './useToast';
-export * from './types';
+export { ToastProvider } from './ToastProvider';
+export * from './';
