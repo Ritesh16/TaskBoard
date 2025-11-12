@@ -7,6 +7,12 @@ namespace TaskBoard.Service
     public class AccountService : IAccountService
     {
         List<User> users = new List<User>();
+
+        public AccountService()
+        {
+            users.Add(new User { Email = "ritesh@gmail.com", Name = "Ritesh Sharma", Id = 1});
+            users.Add(new User { Email = "user@gmail.com", Name = "Rob Smith", Id = 2 });
+        }
         public Task<User> GetUser(int id)
         {
             throw new NotImplementedException();

@@ -4,19 +4,25 @@ import { useNavigate } from "react-router-dom";
 import { loginSchema, type LoginSchema } from "../../lib/schemas/loginSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAccount } from "../../lib/hooks/useAccount";
 
 
 export default function Login() {
+  const { loginUser } = useAccount();
   const navigate = useNavigate();
-  
+
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginSchema>({
-      mode: 'onTouched',
-      resolver: zodResolver(loginSchema)
+    mode: 'onTouched',
+    resolver: zodResolver(loginSchema)
+  });
+
+  const onSubmit = async (data: LoginSchema) => {
+    await loginUser.mutateAsync(data, {
+      onError: (error) => {
+        console.log(error);
+      }
     });
-  
-    const onSubmit = (data: LoginSchema) => {
-      console.log(1, data);
-    }
+  }
 
   const handleCancel = () => {
     navigate('/');
@@ -43,7 +49,7 @@ export default function Login() {
                       size="lg"
                     />
                   </FloatingLabel>
-                   <Form.Control.Feedback id="email-feedback" type="invalid" className="d-block" role="alert">
+                  <Form.Control.Feedback id="email-feedback" type="invalid" className="d-block" role="alert">
                     {String(errors.email?.message ?? '')}
                   </Form.Control.Feedback>
                 </Form.Group>
@@ -54,24 +60,24 @@ export default function Login() {
                     className="mb-3"
                   >
                     <Form.Control
-                     {...register("password")}
-                     isInvalid={!!errors.password}
+                      {...register("password")}
+                      isInvalid={!!errors.password}
                       size="lg"
                     />
                   </FloatingLabel>
-                   <Form.Control.Feedback id="password-feedback" type="invalid" className="d-block" role="alert">
+                  <Form.Control.Feedback id="password-feedback" type="invalid" className="d-block" role="alert">
                     {String(errors.password?.message ?? '')}
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3">
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     variant="primary"
                     disabled={isSubmitting}>
-                    {isSubmitting ? 'Login in...': 'Login'}
+                    {isSubmitting ? 'Login in...' : 'Login'}
                   </Button>
-                  <Button 
-                    variant="outline-secondary" 
+                  <Button
+                    variant="outline-secondary"
                     style={{ marginLeft: '15px' }}
                     onClick={handleCancel}>
                     Cancel

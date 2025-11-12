@@ -3,15 +3,15 @@ import type { RegisterSchema } from "../schemas/registerSchema";
 import agent from "../api/agent";
 import { useNavigate } from "react-router";
 import { useToast } from "../../app/shared/components/toast/useToast";
-// import { useToast } from "../ui/toast";
-import  "../context/toastContext";
-import "../types/toast";
+import type { LoginSchema } from "../schemas/loginSchema";
+import { useAuth } from "../context/AuthContext";
 
 export const useAccount = () => {
-     const navigate = useNavigate();
-     const toast = useToast();
+    const navigate = useNavigate();
+    const toast = useToast();
+    const { login } = useAuth();
 
-     const registerUser = useMutation({
+    const registerUser = useMutation({
         mutationFn: async (user: RegisterSchema) => {
             await agent.post('/account/register', user);
         },
@@ -24,7 +24,20 @@ export const useAccount = () => {
         }
     });
 
+    const loginUser = useMutation({
+        mutationFn: async (login: LoginSchema) => {
+            const response = await agent.post('/account/login', login);
+            return response.data;
+        },
+        onSuccess: (data) => {
+            console.log(101, data);
+            login({ name: data.name, email: data.email }, data.token);
+            navigate('/home');
+        }
+    });
+
     return {
-        registerUser
+        registerUser,
+        loginUser
     }
 }

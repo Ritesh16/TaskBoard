@@ -9,6 +9,7 @@ import { store, StoreContext } from './lib/stores/store'
 // import ToastContainer from './app/shared/components/toast/ToastContainer'
 import { ToastProvider } from './app/shared/components/toast'
 import { ToastContainer } from 'react-bootstrap'
+import { AuthProvider } from './lib/context/AuthContext'
 
 const queryClient = new QueryClient();
 
@@ -17,7 +18,9 @@ createRoot(document.getElementById('root')!).render(
     <StoreContext.Provider value={store}>
       <ToastProvider>
         <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
         </QueryClientProvider>
         <ToastContainer />
       </ToastProvider>
