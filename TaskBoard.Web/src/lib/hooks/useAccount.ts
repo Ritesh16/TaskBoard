@@ -31,7 +31,7 @@ export const useAccount = () => {
         },
         onSuccess: (data) => {
             console.log(101, data);
-            login({ name: data.name, email: data.email }, data.token);
+            login(data.token);
             navigate('/home');
         }
     });

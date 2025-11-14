@@ -1,10 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import type { DecodedJwtPayload } from '../types/DecodedJwtPayload';
+import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {
     token: string | null;
     user: User | null;
     login: (userData: User, userToken: string) => void;
     logout: () => void;
+    isAuthenticated: boolean;
 }
 
 interface AuthProviderProps {
@@ -30,8 +33,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     }, [token, user]);
 
-    const login = (userData: User, userToken: string) => {
-        setUser(userData);
+    const login = (userToken: string) => {
+        const decodedPayload: DecodedJwtPayload = jwtDecode(userToken);
+        console.log(7, decodedPayload);
+        setUser({name: decodedPayload.name, email: decodedPayload.email});
         setToken(userToken);
     };
 
@@ -40,7 +45,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setToken(null);
     };
 
-    const value = { token, user, login, logout };
+    const value = { token, login, logout, user, isAuthenticated: !!user };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -37,7 +37,8 @@ namespace TaskBoard.Api.Controllers
             var result = await account.Login(login);
             if (result)
             {
-                var token = tokenService.GenerateToken(login.Email);
+                var user = await account.GetUser(login.Email);
+                var token = tokenService.GenerateToken(user);
                 var output = new AuthResponse
                 {
                     Token = token,

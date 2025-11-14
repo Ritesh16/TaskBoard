@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TaskBoard.Domain.User;
 
 namespace TaskBoard.Service.Interfaces
 {
     public interface ITokenService
     {
-        string GenerateToken(string email);
+        string GenerateToken(User user);
     }
 }
