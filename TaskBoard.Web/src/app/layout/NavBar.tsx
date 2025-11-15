@@ -20,20 +20,7 @@ const NavBar = () => {
         <Navbar.Toggle aria-controls="main-navbar" />
         <Navbar.Collapse id="main-navbar">
           <Nav className="me-auto">
-            {isAuthenticated ? (
-              <>
-                <Nav.Link as={NavLink} to="/home">{user?.name}</Nav.Link>
-                <Nav.Link as="button" onClick={handleLogout}>Log out</Nav.Link>
-              </>
-            )
-              :
-              (
-                <>
-                  <Nav.Link as={NavLink} to="/login">Login</Nav.Link>
-                  <Nav.Link as={NavLink} to="/register">Register</Nav.Link>
-                </>
-              )
-            }
+           
             {/* <Nav.Link href="#home">Home</Nav.Link>
             <Nav.Link href="#boards">Boards</Nav.Link>
             <NavDropdown title="More" id="nav-dropdown">
@@ -45,6 +32,24 @@ const NavBar = () => {
           //   <Nav.Link as={NavLink} to="/login">Login</Nav.Link>
           //   <Nav.Link as={NavLink} to="/register">Register</Nav.Link>
           // </Nav> */}
+           {isAuthenticated ? (
+              <>
+              <Nav>
+                <Nav.Link as={NavLink} to="/home">{user?.name}</Nav.Link>
+                <Nav.Link as="button" onClick={handleLogout}>Log out</Nav.Link>
+              </Nav>
+              </>
+            )
+              :
+              (
+                <>
+                <Nav>
+                  <Nav.Link as={NavLink} to="/login">Login</Nav.Link>
+                  <Nav.Link as={NavLink} to="/register">Register</Nav.Link>
+                </Nav>
+                </>
+              )
+            }
         </Navbar.Collapse>
       </Container>
     </Navbar>

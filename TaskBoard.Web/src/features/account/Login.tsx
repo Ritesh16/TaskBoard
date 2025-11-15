@@ -1,15 +1,20 @@
-import { Button, Col, Container, FloatingLabel, Row } from "react-bootstrap";
+import { Alert, Button, Col, Container, FloatingLabel, Row } from "react-bootstrap";
 import Form from "react-bootstrap/esm/Form";
 import { useNavigate } from "react-router-dom";
 import { loginSchema, type LoginSchema } from "../../lib/schemas/loginSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAccount } from "../../lib/hooks/useAccount";
+import { useToast } from "../../app/shared/components/toast/useToast";
+import { useState } from "react";
+import AlertNotification from "../../app/shared/components/AlertNotification";
 
 
 export default function Login() {
   const { loginUser } = useAccount();
   const navigate = useNavigate();
+  const toast = useToast();
+  const [errorAlert, seterrorAlert] = useState<boolean>(false);
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginSchema>({
     mode: 'onTouched',
@@ -19,7 +24,8 @@ export default function Login() {
   const onSubmit = async (data: LoginSchema) => {
     await loginUser.mutateAsync(data, {
       onError: (error) => {
-        console.log(error);
+        seterrorAlert(true);
+        toast.error("User/Password does not match the system.");
       }
     });
   }
@@ -32,9 +38,12 @@ export default function Login() {
     <>
       <h1>Login</h1>
       <hr />
-      <Container fluid className='d-flex justify-content-center ' >
+      <Container fluid className='d-flex justify-content-center '>
         <div className="border rounded-3 shadow-sm p-4 bg-white w-100 mx-3" style={{ maxWidth: 720 }}>
-          <Row>
+          <Row>{errorAlert && (
+            <AlertNotification type="danger" message="Invalid email/password" onClose={() => seterrorAlert(false)} />
+          )}
+            
             <Col sm>
               <Form onSubmit={handleSubmit(onSubmit)}>
                 <Form.Group className="mb-3" controlId="formEmail">

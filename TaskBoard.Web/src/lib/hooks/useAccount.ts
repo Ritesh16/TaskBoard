@@ -10,7 +10,7 @@ export const useAccount = () => {
     const navigate = useNavigate();
     const toast = useToast();
     const { login } = useAuth();
-
+   
     const registerUser = useMutation({
         mutationFn: async (user: RegisterSchema) => {
             await agent.post('/account/register', user);
@@ -30,7 +30,6 @@ export const useAccount = () => {
             return response.data;
         },
         onSuccess: (data) => {
-            console.log(101, data);
             login(data.token);
             navigate('/home');
         }
