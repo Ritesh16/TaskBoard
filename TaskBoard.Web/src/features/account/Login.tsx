@@ -69,6 +69,7 @@ export default function Login() {
                     className="mb-3"
                   >
                     <Form.Control
+                      type="password"
                       {...register("password")}
                       isInvalid={!!errors.password}
                       size="lg"
