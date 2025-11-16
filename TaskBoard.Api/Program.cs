@@ -29,7 +29,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IAccountService, AccountService>();
+builder.Services.AddSingleton<IAccountService, AccountServiceMock>();
+builder.Services.AddSingleton<ITaskService, TaskServiceMock>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
 
 var app = builder.Build();
@@ -49,8 +50,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
+// Authentication must come before Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 

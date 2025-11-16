@@ -4,31 +4,31 @@ using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Service
 {
-    public class AccountService : IAccountService
+    public class AccountServiceMock : IAccountService
     {
         List<User> users = new List<User>();
 
-        public AccountService()
+        public AccountServiceMock()
         {
             users.Add(new User { Email = "ritesh@gmail.com", Name = "Ritesh Sharma", Id = 1});
             users.Add(new User { Email = "user@gmail.com", Name = "Rob Smith", Id = 2 });
         }
-        public Task<User> GetUser(int id)
+        public async Task<User> GetUser(int id)
         {
-            throw new NotImplementedException();
+            return await Task.FromResult(users.FirstOrDefault(x => x.Id == id));
         }
 
-        public Task<User> GetUser(string email)
+        public async Task<User> GetUser(string email)
         {
-            return Task.FromResult(users.FirstOrDefault(x => x.Email == email));
+            return await Task.FromResult(users.FirstOrDefault(x => x.Email == email));
         }
 
-        public Task<bool> Login(Login login)
+        public async Task<bool> Login(Login login)
         {
-            return Task.FromResult(users.Any(x => x.Email == login.Email));
+            return await Task.FromResult(users.Any(x => x.Email == login.Email));
         }
 
-        public Task<bool> Register(Register register)
+        public async Task<bool> Register(Register register)
         {
             var user = new User
             {
@@ -38,7 +38,7 @@ namespace TaskBoard.Service
             };
 
             users.Add(user);
-            return Task.FromResult(true);
+            return await Task.FromResult(true);
         }
     }
 }
