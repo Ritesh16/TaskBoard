@@ -50,6 +50,11 @@ namespace TaskBoard.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] AddTask addTask)
         {
+            var userId = User.FindFirstValue("UserId");
+            var id = Convert.ToInt32(userId);
+
+            addTask.UserId = id;
+
             await taskService.AddTask(addTask);
             return Ok();
         }

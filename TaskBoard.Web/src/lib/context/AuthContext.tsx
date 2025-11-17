@@ -35,7 +35,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const login = (userToken: string) => {
         const decodedPayload: DecodedJwtPayload = jwtDecode(userToken);
-        console.log(7, decodedPayload);
         setUser({name: decodedPayload.name, email: decodedPayload.email});
         setToken(userToken);
     };

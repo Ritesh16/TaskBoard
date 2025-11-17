@@ -1,30 +1,41 @@
 import { Form, InputGroup, Col } from "react-bootstrap";
 import logo from '../../assets/save.png';
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useTasks } from "../../lib/hooks/useTasks";
+import { useToast } from "../../app/shared/components/toast/useToast";
+import { addTaskTitleSchema, type AddTaskTitleSchema } from "../../lib/schemas/addTaskTitleSchema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 
 export default function AddTask() {
-    const [value, setValue] = useState<string>('');
+    const { saveTaskTitle } = useTasks();
+    const toast = useToast();
 
-     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-            console.log('Submitted:', value);
-            setValue('');
-        };
+    const { register, handleSubmit, formState: { errors } } = useForm<AddTaskTitleSchema>({
+        mode: 'onTouched',
+        resolver: zodResolver(addTaskTitleSchema)
+    });
     
-        const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-            setValue(e.target.value);
-        };
+
+    const onSubmit = async (data: AddTaskTitleSchema) => {
+        console.log('Submitted:', data.title);
+        await saveTaskTitle.mutateAsync(data, {
+            onError: (error) => {
+                console.log(error);
+                toast.error("Some error has occurred while adding task.");
+            }
+        });
+    };
 
     return (
         <>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group as={Col} controlId="validationCustomUsername">
+            <Form onSubmit={handleSubmit(onSubmit)}>
+                <Form.Group as={Col} controlId="validationTitle">
                     <InputGroup hasValidation>
                         <Form.Control
-                            type="text"
+                            {...register('title')}
+                            isInvalid={!!errors.title}
                             aria-describedby="inputGroupPrepend"
-                            required
-                            onChange={handleChange}
                         />
                         <InputGroup.Text id="inputGroupPrepend" style={{ cursor: 'pointer' }}>
                             <img src={logo} alt="Logo" onClick={(e) => {
@@ -33,7 +44,7 @@ export default function AddTask() {
                             }} />
                         </InputGroup.Text>
                         <Form.Control.Feedback type="invalid">
-                            Please choose a username.
+                            Please enter the task title
                         </Form.Control.Feedback>
                     </InputGroup>
                 </Form.Group>

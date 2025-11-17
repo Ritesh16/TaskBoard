@@ -3,13 +3,15 @@ import { useState } from 'react';
 import AddTask from '../task/AddTask';
 import TaskList from '../task/TaskList';
 import TaskDetail from '../task/TaskDetail';
+import { useTasks } from '../../lib/hooks/useTasks';
 
 export default function UserHome() {
-    //const [value, setValue] = useState<string>('');
+    const {userTasks, userTasksLoading} = useTasks();
     const [activeKey, setActiveKey] = useState<string>('#link1');
-    const [section3Data, setSection3Data] = useState<string | null>(null);
+    const [section3Data, setSection3Data] = useState<number | null>(null);
+    
 
-    const loadTask = (taskId: string) => {
+    const loadTask = (taskId: number) => {
         // load details into section-3
         console.log('loading task ->', taskId);
         setSection3Data(taskId);
@@ -21,7 +23,7 @@ export default function UserHome() {
                 id="list-group-tabs-example"
                 activeKey={activeKey}
                 onSelect={(k) => {
-                    if (typeof k === 'string') {
+                    if (typeof k === 'number') {
                         setActiveKey(k);
                         // clear section-3 whenever a new top-level section (col-1) is selected
                         setSection3Data(null);
@@ -45,10 +47,15 @@ export default function UserHome() {
                                 <AddTask />
                                 <main className="center-wrap">
                                     <div className="center-content">
+                                        {userTasks.length === 0  ? (
+                                           <h4>No tasks exists</h4>
+                                        ): 
                                         <TaskList
-                                            items={[{ id: 'Task-1', title: 'Task 1', category: 'CategoryName', date: 'Wednesday, Jul 16', count: 14 }]}
+                                            items={userTasks}
                                             onSelect={loadTask}
                                         />
+                                        } 
+                                        
                                     </div>
                                 </main>
                             </Tab.Pane>

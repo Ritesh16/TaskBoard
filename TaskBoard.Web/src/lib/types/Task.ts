@@ -1,5 +1,7 @@
 export interface Task {
-    id: number;
+    taskId: number;
+    userId: number;
     title: string;
-    dueDate?: Date;
+    categoryName: string;
+    date?: Date;
 }
