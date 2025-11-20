@@ -1,6 +1,6 @@
 import { Card, Button } from 'react-bootstrap';
 
-export default function TaskDetail({ taskId, onClear }: { taskId: string | null; onClear: () => void }) {
+export default function TaskDetail({ taskId, onClear }: { taskId: number | null; onClear: () => void }) {
   if (!taskId) {
     return <div className="text-muted">No item selected — details will appear here.</div>;
   }

@@ -8,13 +8,13 @@ import { useTasks } from '../../lib/hooks/useTasks';
 export default function UserHome() {
     const {userTasks, userTasksLoading} = useTasks();
     const [activeKey, setActiveKey] = useState<string>('#link1');
-    const [section3Data, setSection3Data] = useState<number | null>(null);
+    const [selectedTask, setSelectedTask] = useState<number | null>(null);
     
 
     const loadTask = (taskId: number) => {
         // load details into section-3
         console.log('loading task ->', taskId);
-        setSection3Data(taskId);
+        setSelectedTask(taskId);
     };
 
     return (
@@ -26,7 +26,7 @@ export default function UserHome() {
                     if (typeof k === 'number') {
                         setActiveKey(k);
                         // clear section-3 whenever a new top-level section (col-1) is selected
-                        setSection3Data(null);
+                        setSelectedTask(null);
                     }
                 }}
             >
@@ -46,7 +46,13 @@ export default function UserHome() {
                             <Tab.Pane eventKey="#link1">
                                 <AddTask />
                                 <main className="center-wrap">
-                                    <div className="center-content">
+                                    {userTasksLoading ? (
+                                        <div>
+                                            Loading tasks...
+                                        </div>
+                                    ) :
+                                    (
+                                        <div className="center-content">
                                         {userTasks.length === 0  ? (
                                            <h4>No tasks exists</h4>
                                         ): 
@@ -57,6 +63,8 @@ export default function UserHome() {
                                         } 
                                         
                                     </div>
+                                    )
+                                    }
                                 </main>
                             </Tab.Pane>
                             <Tab.Pane eventKey="#link2">Tab pane content 2</Tab.Pane>
@@ -64,7 +72,7 @@ export default function UserHome() {
                     </Col>
                     <Col sm={3}>
                         <div style={{ minHeight: '200px' }}>
-                            <TaskDetail taskId={section3Data} onClear={() => setSection3Data(null)} />
+                            <TaskDetail taskId={selectedTask} onClear={() => setSelectedTask(null)} />
                         </div>
                     </Col>
                 </Row>

@@ -11,15 +11,18 @@ export default function AddTask() {
     const { saveTaskTitle } = useTasks();
     const toast = useToast();
 
-    const { register, handleSubmit, formState: { errors } } = useForm<AddTaskTitleSchema>({
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<AddTaskTitleSchema>({
         mode: 'onTouched',
         resolver: zodResolver(addTaskTitleSchema)
     });
     
 
     const onSubmit = async (data: AddTaskTitleSchema) => {
-        console.log('Submitted:', data.title);
         await saveTaskTitle.mutateAsync(data, {
+            onSuccess: () => {
+                toast.success("Task added successfully.");
+                reset();
+            },
             onError: (error) => {
                 console.log(error);
                 toast.error("Some error has occurred while adding task.");

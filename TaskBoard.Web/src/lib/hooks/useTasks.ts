@@ -1,11 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import agent from "../api/agent";
 import type { Task } from "../types/Task";
-import { useToast } from "../../app/shared/components/toast/useToast";
 import type { AddTaskTitleSchema } from "../schemas/addTaskTitleSchema";
 
 export const useTasks = () => {
-    const toast = useToast();
     const queryClient = useQueryClient();
     
     const {data: userTasks = [], isLoading: userTasksLoading} = useQuery({
@@ -25,7 +23,6 @@ export const useTasks = () => {
             await queryClient.invalidateQueries({
                 queryKey: ['tasks']
             });
-            toast.success('Task added successfully.');
         }
     });
 
