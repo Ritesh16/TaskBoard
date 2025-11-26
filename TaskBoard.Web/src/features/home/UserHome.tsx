@@ -3,18 +3,15 @@ import { useState } from 'react';
 import AddTask from '../task/AddTask';
 import TaskList from '../task/TaskList';
 import TaskDetail from '../task/TaskDetail';
-import { useTasks } from '../../lib/hooks/useTasks';
 
 export default function UserHome() {
-    const {userTasks, userTasksLoading} = useTasks();
     const [activeKey, setActiveKey] = useState<string>('#link1');
-    const [selectedTask, setSelectedTask] = useState<number | null>(null);
-    
+    const [selectedTaskId, setSelectedTaskId] = useState<number>();
 
     const loadTask = (taskId: number) => {
         // load details into section-3
         console.log('loading task ->', taskId);
-        setSelectedTask(taskId);
+        setSelectedTaskId(taskId);
     };
 
     return (
@@ -26,7 +23,7 @@ export default function UserHome() {
                     if (typeof k === 'number') {
                         setActiveKey(k);
                         // clear section-3 whenever a new top-level section (col-1) is selected
-                        setSelectedTask(null);
+                        setSelectedTaskId(-1);
                     }
                 }}
             >
@@ -45,34 +42,14 @@ export default function UserHome() {
                         <Tab.Content>
                             <Tab.Pane eventKey="#link1">
                                 <AddTask />
-                                <main className="center-wrap">
-                                    {userTasksLoading ? (
-                                        <div>
-                                            Loading tasks...
-                                        </div>
-                                    ) :
-                                    (
-                                        <div className="center-content">
-                                        {userTasks.length === 0  ? (
-                                           <h4>No tasks exists</h4>
-                                        ): 
-                                        <TaskList
-                                            items={userTasks}
-                                            onSelect={loadTask}
-                                        />
-                                        } 
-                                        
-                                    </div>
-                                    )
-                                    }
-                                </main>
+                              <TaskList onSelect={loadTask} />
                             </Tab.Pane>
                             <Tab.Pane eventKey="#link2">Tab pane content 2</Tab.Pane>
                         </Tab.Content>
                     </Col>
                     <Col sm={3}>
                         <div style={{ minHeight: '200px' }}>
-                            <TaskDetail taskId={selectedTask} onClear={() => setSelectedTask(null)} />
+                             <TaskDetail taskId={selectedTaskId} /> 
                         </div>
                     </Col>
                 </Row>

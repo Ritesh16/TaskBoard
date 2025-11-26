@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskBoard.Domain.Task;
+﻿using TaskBoard.Domain.Task;
 
 namespace TaskBoard.Service.Interfaces
 {
@@ -12,6 +7,7 @@ namespace TaskBoard.Service.Interfaces
         Task<IEnumerable<UserTask>> GetTasks(int userId);
         Task AddTask(AddTask addTask);
         Task AddTaskDetail();
+        Task<UserTask> GetTask(int taskId);
 
     }
 }

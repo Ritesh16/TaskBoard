@@ -47,6 +47,13 @@ namespace TaskBoard.Api.Controllers
             return Ok(tasks);
         }
 
+        [HttpGet("{taskId}")]
+        public async Task<IActionResult> GetTask(int taskId)
+        {
+            var tasks = await taskService.GetTask(taskId);
+            return Ok(tasks);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] AddTask addTask)
         {

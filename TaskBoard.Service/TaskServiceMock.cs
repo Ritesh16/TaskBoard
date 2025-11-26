@@ -26,6 +26,11 @@ namespace TaskBoard.Service
             throw new NotImplementedException();
         }
 
+        public Task<UserTask> GetTask(int taskId)
+        {
+            return Task.FromResult(list.FirstOrDefault(x => x.TaskId == taskId));
+        }
+
         public async Task<IEnumerable<UserTask>> GetTasks(int userId)
         {
             var tasks = GetTasks().Where(x => x.UserId == userId);
