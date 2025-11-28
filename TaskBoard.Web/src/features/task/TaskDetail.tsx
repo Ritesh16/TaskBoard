@@ -1,16 +1,24 @@
-import { Card, Button, Form, Row, Col, Badge } from 'react-bootstrap';
+import { Card, Button, Form, Badge } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import { useTasks } from '../../lib/hooks/useTasks';
+import "react-datepicker/dist/react-datepicker.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import TaskSchedule from './TaskSchedule';
 
-export default function TaskDetail({ taskId }: { taskId: number }) {
+export default function TaskDetail({ taskId }: { taskId?: number }) {
   const { userTask, userTaskLoading } = useTasks(taskId);
   const [isEditing, setIsEditing] = useState(false);
   const [details, setDetails] = useState('');
 
-  // Update details when task loads
+  
+
+  // Update details and date when task loads
   useEffect(() => {
     if (userTask) {
-      setDetails(''); // Initialize with empty string or fetch from API if available
+      const meta = userTask as unknown as { details?: string; repeat?: 'None' | 'Daily' | 'Weekly' | 'Monthly' | 'Yearly' | 'Custom' };
+      setDetails(meta.details ?? '');
+      // setStartDate(userTask.date ? new Date(userTask.date) : new Date());
+      // setRepeatOption(meta.repeat ?? 'None');
     }
   }, [userTask]);
 
@@ -34,13 +42,7 @@ export default function TaskDetail({ taskId }: { taskId: number }) {
     );
   }
 
-  const formattedDate = userTask.date 
-    ? new Date(userTask.date).toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-      })
-    : 'N/A';
+  
 
   return (
     <Card className="border-0 shadow-sm">
@@ -50,8 +52,8 @@ export default function TaskDetail({ taskId }: { taskId: number }) {
             <Card.Title className="mb-1">{userTask.title}</Card.Title>
             <Badge bg="info" text="dark">{userTask.categoryName}</Badge>
           </div>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             variant="outline-secondary"
             onClick={() => setIsEditing(!isEditing)}
           >
@@ -60,13 +62,6 @@ export default function TaskDetail({ taskId }: { taskId: number }) {
         </div>
       </Card.Header>
       <Card.Body>
-        <Row className="mb-3">
-          <Col>
-            <small className="text-muted d-block">Due Date</small>
-            <p className="mb-0">{formattedDate}</p>
-          </Col>
-        </Row>
-
         <Form.Group className="mb-3">
           <Form.Label className="text-muted">
             <small>Task Details</small>
@@ -77,25 +72,25 @@ export default function TaskDetail({ taskId }: { taskId: number }) {
             placeholder="Add or edit task details here..."
             value={details}
             onChange={(e) => setDetails(e.target.value)}
-            readOnly={!isEditing}
             className={!isEditing ? 'bg-light' : ''}
           />
         </Form.Group>
 
         {isEditing && (
           <div className="d-flex gap-2">
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="primary"
               onClick={() => {
-                // TODO: Call mutation to save details
+                // TODO: Call mutation to save details, date and repeat settings
+                console.log('Save', { details });
                 setIsEditing(false);
               }}
             >
               Save
             </Button>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="outline-secondary"
               onClick={() => {
                 setIsEditing(false);
@@ -106,6 +101,9 @@ export default function TaskDetail({ taskId }: { taskId: number }) {
             </Button>
           </div>
         )}
+
+        <TaskSchedule userTask={userTask} />
+        
       </Card.Body>
     </Card>
   );
