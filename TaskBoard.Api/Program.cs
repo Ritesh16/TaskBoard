@@ -30,6 +30,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IAccountService, AccountServiceMock>();
+builder.Services.AddSingleton<ICategoryService, CategoryServiceMock>();
 builder.Services.AddSingleton<ITaskService, TaskServiceMock>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
 
