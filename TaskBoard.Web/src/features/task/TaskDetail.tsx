@@ -1,16 +1,24 @@
-import { Card, Button, Form, Badge } from 'react-bootstrap';
+import { Card, Button, Form, Badge, Dropdown } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import { useTasks } from '../../lib/hooks/useTasks';
 import "react-datepicker/dist/react-datepicker.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TaskSchedule from './TaskSchedule';
+import { useCategory } from '../../lib/hooks/useCategory';
 
 export default function TaskDetail({ taskId }: { taskId?: number }) {
   const { userTask, userTaskLoading } = useTasks(taskId);
   const [isEditing, setIsEditing] = useState(false);
   const [details, setDetails] = useState('');
+  const { userCategories, userCategoriesLoading } = useCategory();
+  const [category, setCategory] = useState<string>('');
 
-  
+  const handleSelect = (eventKey: string | null) => {
+    if (eventKey) {
+      setCategory(eventKey);
+      console.log('category', eventKey);
+    }
+  };
 
   // Update details and date when task loads
   useEffect(() => {
@@ -42,8 +50,6 @@ export default function TaskDetail({ taskId }: { taskId?: number }) {
     );
   }
 
-  
-
   return (
     <Card className="border-0 shadow-sm">
       <Card.Header className="bg-primary bg-opacity-10 border-0 pb-3">
@@ -66,12 +72,24 @@ export default function TaskDetail({ taskId }: { taskId?: number }) {
           <Form.Label className="text-muted">
             <small>Task Details</small>
           </Form.Label>
+          <Dropdown className="mb-3" onSelect={handleSelect}>
+            <Dropdown.Toggle size="sm" variant="secondary" className="w-100" disabled={!isEditing}>
+              {!category ? 'Select...' : category}
+            </Dropdown.Toggle>
+            <Dropdown.Menu className="w-100">
+              {userCategories.map((uc) => (
+                <Dropdown.Item eventKey={uc.name} key={uc.categoryId}>{uc.name}</Dropdown.Item>
+              ))
+              }
+            </Dropdown.Menu>
+          </Dropdown>
           <Form.Control
             as="textarea"
             rows={4}
             placeholder="Add or edit task details here..."
             value={details}
             onChange={(e) => setDetails(e.target.value)}
+            readOnly={!isEditing}
             className={!isEditing ? 'bg-light' : ''}
           />
         </Form.Group>
@@ -103,7 +121,7 @@ export default function TaskDetail({ taskId }: { taskId?: number }) {
         )}
 
         <TaskSchedule userTask={userTask} />
-        
+
       </Card.Body>
     </Card>
   );

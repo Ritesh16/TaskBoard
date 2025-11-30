@@ -10,7 +10,6 @@ export default function UserHome() {
 
     const loadTask = (taskId: number) => {
         // load details into section-3
-        console.log('loading task ->', taskId);
         setSelectedTaskId(taskId);
     };
 

@@ -102,12 +102,12 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                                 className="form-control"
                             />
                         </Col>
-                        <Col md={4} className="d-flex align-items-end">
+                        {/* <Col md={4} className="d-flex align-items-end">
                             <div className="bg-light p-3 rounded w-100 text-center">
                                 <small className="text-muted d-block">Selected Date</small>
                                 <strong>{formattedDate}</strong>
                             </div>
-                        </Col>
+                        </Col> */}
                     </Row>
                 </div>
 
