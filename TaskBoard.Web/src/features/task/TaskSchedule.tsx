@@ -10,6 +10,7 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
     const [customRepeat, setCustomRepeat] = useState('');
     const [customUnit, setCustomUnit] = useState<string>('days');
     const [selectedDays, setSelectedDays] = useState<Set<number>>(new Set());
+    const [selectedQuickDate, setSelectedQuickDate] = useState<string | null>('today');
 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const dayAbbrev = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -29,14 +30,6 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
         }
         setSelectedDays(newDays);
     };
-
-    const formattedDate = startDate
-        ? startDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        })
-        : 'N/A';
 
     const repeatSummary = repeatOption === 'None' ? 'No repeat' : 
         repeatOption === 'Custom' ? `Every ${customRepeat} ${customUnit}` : 
@@ -62,29 +55,45 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                     <div className="mb-3">
                         <ButtonGroup size="sm" className="w-100" style={{ display: 'flex', gap: '4px' }}>
                             <Button 
-                                variant="outline-primary" 
-                                onClick={() => setStartDate(new Date())}
+                                variant={selectedQuickDate === 'today' ? 'primary' : 'outline-primary'} 
+                                onClick={() => {
+                                    setStartDate(new Date());
+                                    setSelectedQuickDate('today');
+                                }}
                                 className="flex-grow-1"
                             >
                                 Today
                             </Button>
                             <Button 
-                                variant="outline-primary" 
-                                onClick={() => setStartDate(new Date(Date.now() + 24 * 60 * 60 * 1000))}
+                                variant={selectedQuickDate === 'tomorrow' ? 'primary' : 'outline-primary'} 
+                                onClick={() => {
+                                    setStartDate(new Date(Date.now() + 24 * 60 * 60 * 1000));
+                                    setSelectedQuickDate('tomorrow');
+                                }}
                                 className="flex-grow-1"
                             >
                                 Tomorrow
                             </Button>
                             <Button 
-                                variant="outline-primary" 
-                                onClick={() => { const d = new Date(); d.setDate(d.getDate() + 7); setStartDate(d); }}
+                                variant={selectedQuickDate === 'nextWeek' ? 'primary' : 'outline-primary'} 
+                                onClick={() => { 
+                                    const d = new Date(); 
+                                    d.setDate(d.getDate() + 7); 
+                                    setStartDate(d);
+                                    setSelectedQuickDate('nextWeek');
+                                }}
                                 className="flex-grow-1"
                             >
                                 Next Week
                             </Button>
                             <Button 
-                                variant="outline-primary" 
-                                onClick={() => { const d = new Date(); d.setMonth(d.getMonth() + 1); setStartDate(d); }}
+                                variant={selectedQuickDate === 'nextMonth' ? 'primary' : 'outline-primary'} 
+                                onClick={() => { 
+                                    const d = new Date(); 
+                                    d.setMonth(d.getMonth() + 1); 
+                                    setStartDate(d);
+                                    setSelectedQuickDate('nextMonth');
+                                }}
                                 className="flex-grow-1"
                             >
                                 Next Month
@@ -97,17 +106,14 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                             <small className="text-muted d-block mb-2">Pick a custom date</small>
                             <DatePicker
                                 selected={startDate}
-                                onChange={(date: Date | null) => setStartDate(date)}
+                                onChange={(date: Date | null) => {
+                                    setStartDate(date);
+                                    setSelectedQuickDate(null);
+                                }}
                                 dateFormat="MMMM d, yyyy"
                                 className="form-control"
                             />
                         </Col>
-                        {/* <Col md={4} className="d-flex align-items-end">
-                            <div className="bg-light p-3 rounded w-100 text-center">
-                                <small className="text-muted d-block">Selected Date</small>
-                                <strong>{formattedDate}</strong>
-                            </div>
-                        </Col> */}
                     </Row>
                 </div>
 

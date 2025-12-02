@@ -35,7 +35,11 @@ namespace TaskBoard.Service
                 UserId = 2
             };
 
-            list.Add(userCategory);
+            if (list.Count == 0)
+            {
+                list.Add(userCategory);
+            }
+
             return list;
         }
     }
