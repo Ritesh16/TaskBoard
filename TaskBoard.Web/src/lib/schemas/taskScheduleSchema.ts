@@ -1,18 +1,13 @@
 import { z } from 'zod';
 
 export const taskScheduleSchema = z.object({
-  taskId: z.number()
-    .min(1, 'Task ID is required'),
-  
-  frequency: z.number()
-    .min(1, 'Frequency is required'),
-  
-  categoryId: z.number()
-    .min(1, 'Category is required'),
-  
-  details: z.string()
-    .max(2000, 'Details must not exceed 2000 characters'),
-  
+  taskId: z.number().optional(),
+  startDate: z.date().nullable().optional(),
+  quick: z.string().nullable().optional(),
+  repeat: z.enum(['None', 'Daily', 'Weekly', 'Monthly', 'Yearly', 'Custom']).default('None'),
+  customRepeat: z.string().optional().default(''),
+  customUnit: z.enum(['days','weeks','months','years']).default('days'),
+  selectedDays: z.array(z.number()).optional().default([]),
 });
 
-export type TaskDetailFormData = z.infer<typeof taskScheduleSchema>;
+export type TaskScheduleSchema = z.infer<typeof taskScheduleSchema>;
