@@ -8,6 +8,9 @@ export const taskScheduleSchema = z.object({
   customRepeat: z.string().optional().default(''),
   customUnit: z.enum(['days','weeks','months','years']).default('days'),
   selectedDays: z.array(z.number()).optional().default([]),
+   endType: z.enum(['never', 'endDate', 'endAfter']).optional().default('never'),
+  endDate: z.date().nullable().optional(),
+  endAfter: z.string().optional().default(''),
 });
 
 export type TaskScheduleSchema = z.infer<typeof taskScheduleSchema>;
