@@ -8,11 +8,13 @@ import "react-datepicker/dist/react-datepicker.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TaskSchedule from './TaskSchedule';
 import { useCategory } from '../../lib/hooks/useCategory';
+import { useToast } from '../../app/shared/components/toast/useToast';
 
 export default function TaskDetail({ taskId }: { taskId?: number }) {
-  const { userTask, userTaskLoading } = useTasks(taskId);
+  const { userTask, userTaskLoading, saveTaskDetails } = useTasks(taskId);
   const [isEditing, setIsEditing] = useState(false);
   const { userCategories } = useCategory();
+  const toast = useToast();
 
   const {
     control,
@@ -45,6 +47,13 @@ export default function TaskDetail({ taskId }: { taskId?: number }) {
   }, [userTask, reset, userCategories]);
 
   const onSubmit = async (data: TaskDetailFormData) => {
+    await saveTaskDetails.mutateAsync(data, {
+      onError: (error) => {
+        console.log(error);
+        toast.error("User/Password does not match the system.");
+      }
+    });
+
     console.log('Form submitted with data:', data);
     // TODO: Call mutation to save task details
     setIsEditing(false);

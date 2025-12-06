@@ -6,6 +6,12 @@ namespace TaskBoard.Service
     public class TaskServiceMock : ITaskService
     {
         List<UserTask> list = new List<UserTask>();
+        List<TaskSchedule> taskSchedules = new List<TaskSchedule>();
+
+        public TaskServiceMock()
+        {
+        }
+
         public Task AddTask(AddTask addTask)
         {
             var userTask = new UserTask 
@@ -21,7 +27,15 @@ namespace TaskBoard.Service
 
             return Task.FromResult(userTask);
         }
-        public Task AddTaskDetail()
+        public Task AddTaskDetail(TaskDetail taskDetail)
+        {
+            var task = list.FirstOrDefault(x => x.TaskId == taskDetail.TaskId);
+            task.Description = taskDetail.Details;
+            task.CategoryId = taskDetail.CategoryId;
+            return Task.CompletedTask;
+        }
+
+        public Task AddTaskSchedule(TaskSchedule taskSchedule)
         {
             throw new NotImplementedException();
         }

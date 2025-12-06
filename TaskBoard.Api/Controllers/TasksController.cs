@@ -65,5 +65,28 @@ namespace TaskBoard.Api.Controllers
             await taskService.AddTask(addTask);
             return Ok();
         }
+
+        [HttpPost("SaveTaskDetails")]
+        public async Task<IActionResult> SaveTaskDetail([FromBody] TaskDetail taskDetail)
+        {
+            var userId = User.FindFirstValue("UserId");
+            var id = Convert.ToInt32(userId);
+
+            //taskDetail.UserId = id;
+
+            await taskService.AddTaskDetail(taskDetail);
+            return Ok();
+        }
+        [HttpPost("SaveTaskSchedule")]
+        public async Task<IActionResult> SaveTaskSchedule([FromBody] TaskSchedule taskSchedule)
+        {
+            //var userId = User.FindFirstValue("UserId");
+            //var id = Convert.ToInt32(userId);
+
+            ////taskDetail.UserId = id;
+
+            //await taskService.AddTaskDetail(taskDetail);
+            return Ok();
+        }
     }
 }

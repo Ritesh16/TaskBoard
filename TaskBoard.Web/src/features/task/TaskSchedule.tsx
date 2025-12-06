@@ -7,15 +7,31 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { taskScheduleSchema, type TaskScheduleSchema } from "../../lib/schemas/taskScheduleSchema";
 import { useToast } from "../../app/shared/components/toast/useToast";
+import { useTasks } from "../../lib/hooks/useTasks";
+
+interface TaskSchedulePayload {
+    taskId?: number;
+    startDate: string | null;
+    oneTimeOption: string | null;
+    repeat: string;
+    customRepeat: string;
+    customUnit: string;
+    selectedDays: number[];
+    endType: string;
+    endDate: string | null;
+    endAfter: string | null;
+}
 
 export default function TaskSchedule({ userTask }: { userTask?: Task }) {
-    const { control, handleSubmit, reset, setValue, watch } = useForm<any>({
+    const { saveTaskSchedules } = useTasks(userTask?.taskId);
+
+    const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<any>({
         mode: 'onTouched',
         resolver: zodResolver(taskScheduleSchema),
         defaultValues: {
             taskId: userTask?.taskId,
-            startDate: userTask?.date ? new Date(userTask.date) : null,
-            quick: 'today',
+            startDate: userTask?.date,
+            oneTimeOption: 'today',
             repeat: 'None',
             customRepeat: '',
             customUnit: 'days',
@@ -29,7 +45,7 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const dayAbbrev = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
-    const quickVal = watch('quick');
+    const quickVal = watch('oneTimeOption');
     const repeat = watch('repeat');
     const customRepeatVal = watch('customRepeat');
     const customUnitVal = watch('customUnit');
@@ -43,8 +59,8 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
             const meta = userTask as unknown as { details?: string; repeat?: 'None' | 'Daily' | 'Weekly' | 'Monthly' | 'Yearly' | 'Custom' };
             reset({
                 taskId: userTask.taskId,
-                startDate: userTask.date ? new Date(userTask.date) : null,
-                quick: 'today',
+                startDate: userTask.date,
+                oneTimeOption: 'today',
                 repeat: meta.repeat ?? 'None',
                 customRepeat: '',
                 customUnit: 'days',
@@ -63,22 +79,44 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
         setValue('selectedDays', next);
     };
 
-    const onSubmit = (data: TaskScheduleSchema) => {
-        if(data.repeat == 'Weekly' && data.selectedDays.length === 0) {
+    const onSubmit = async (data: TaskScheduleSchema) => {
+         console.log('Submitting schedule:', data);
+
+        if (data.repeat == 'Weekly' && data.selectedDays.length === 0) {
             toast.error('Please select the days.');
             return;
         }
 
-        const y = {
+        let sd = new Date(data.startDate);
+        let ed = new Date(data.endDate);
+
+        // Send data with exact field names expected by backend
+        const payload: TaskSchedulePayload = {
             taskId: data.taskId,
-            frequency: data.repeat === 'None' ? 'Daily' : data.repeat,
-            startDate: data.startDate,
-            daysOfWeek: data.selectedDays,
-            interval: `every ${data.customRepeat} ${data.customUnit}`
+            startDate: `${sd.getMonth() + 1}-${sd.getDay()}-${sd.getFullYear()}`,
+            oneTimeOption: data.oneTimeOption || null,
+            repeat: data.repeat,
+            customRepeat: data.customRepeat,
+            customUnit: data.customUnit,
+            selectedDays: data.selectedDays || [],
+            endType: data.endType || 'never',
+            endDate: `${ed.getMonth() + 1}-${ed.getDay()}-${ed.getFullYear()}`,
+            endAfter: data.endAfter || null
         };
 
-        console.log('Save schedule', data);
-        console.log('Save schedule', y);
+        console.log('Submitting schedule:', JSON.stringify(payload, null, 2));
+
+        try {
+            const result = await saveTaskSchedules.mutateAsync(payload as unknown as TaskScheduleSchema);
+            console.log('Success response:', result);
+            toast.success('Schedule saved successfully!');
+        } catch (error: unknown) {
+            console.error('Full error object:', error);
+            const httpError = error as { response?: { data?: { message?: string } } };
+            console.error('Schedule save error:', httpError.response?.data || error);
+            const errorMsg = httpError.response?.data?.message || 'Error adding the schedule.';
+            toast.error(errorMsg);
+        }
     };
 
     return (
@@ -90,16 +128,16 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
 
                         <div className="mb-2">
                             <ButtonGroup size="sm" className="w-100" style={{ display: 'flex', gap: '2px' }}>
-                                <Button variant={quickVal === 'today' ? 'primary' : 'outline-primary'} onClick={() => { const d = new Date(); setValue('startDate', d); setValue('quick','today'); }} className="flex-grow-1" style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem' }}>Today</Button>
-                                <Button variant={quickVal === 'tomorrow' ? 'primary' : 'outline-primary'} onClick={() => { const d = new Date(Date.now()+24*60*60*1000); setValue('startDate', d); setValue('quick','tomorrow'); }} className="flex-grow-1" style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem' }}>Tomorrow</Button>
-                                <Button variant={quickVal === 'nextWeek' ? 'primary' : 'outline-primary'} onClick={() => { const d = new Date(); d.setDate(d.getDate()+7); setValue('startDate', d); setValue('quick','nextWeek'); }} className="flex-grow-1" style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem' }}>Next Week</Button>
-                                <Button variant={quickVal === 'nextMonth' ? 'primary' : 'outline-primary'} onClick={() => { const d = new Date(); d.setMonth(d.getMonth()+1); setValue('startDate', d); setValue('quick','nextMonth'); }} className="flex-grow-1" style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem' }}>Next Month</Button>
+                                <Button variant={quickVal === 'today' ? 'primary' : 'outline-primary'} onClick={() => { const d = new Date(); setValue('startDate', d); setValue('oneTimeOption', 'today'); }} className="flex-grow-1" style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem' }}>Today</Button>
+                                <Button variant={quickVal === 'tomorrow' ? 'primary' : 'outline-primary'} onClick={() => { const d = new Date(Date.now() + 24 * 60 * 60 * 1000); setValue('startDate', d); setValue('oneTimeOption', 'tomorrow'); }} className="flex-grow-1" style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem' }}>Tomorrow</Button>
+                                <Button variant={quickVal === 'nextWeek' ? 'primary' : 'outline-primary'} onClick={() => { const d = new Date(); d.setDate(d.getDate() + 7); setValue('startDate', d); setValue('oneTimeOption', 'nextWeek'); }} className="flex-grow-1" style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem' }}>Next Week</Button>
+                                <Button variant={quickVal === 'nextMonth' ? 'primary' : 'outline-primary'} onClick={() => { const d = new Date(); d.setMonth(d.getMonth() + 1); setValue('startDate', d); setValue('oneTimeOption', 'nextMonth'); }} className="flex-grow-1" style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem' }}>Next Month</Button>
                             </ButtonGroup>
                         </div>
 
                         <div className="mb-2">
                             <small className="text-muted d-block mb-1" style={{ fontSize: '0.8rem' }}>Or pick a date:</small>
-                            <Controller name="startDate" control={control} render={({ field }) => (<DatePicker selected={field.value} onChange={(d) => { field.onChange(d); setValue('quick', null); }} dateFormat="MMM d, yyyy" className="form-control form-control-sm" />)} />
+                            <Controller name="startDate" control={control} render={({ field }) => (<DatePicker selected={field.value} onChange={(d) => { field.onChange(d); setValue('oneTimeOption', null); }} dateFormat="MM-dd-yyyy" className="form-control form-control-sm" />)} />
                         </div>
                     </div>
 
@@ -116,12 +154,12 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                                 <Dropdown className="mb-2">
                                     <Dropdown.Toggle size="sm" variant="secondary" className="w-100" style={{ fontSize: '0.85rem' }}>{repeat}</Dropdown.Toggle>
                                     <Dropdown.Menu className="w-100" style={{ fontSize: '0.85rem' }}>
-                                        <Dropdown.Item onClick={() => setValue('repeat','Daily')}>Daily</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => setValue('repeat','Weekly')}>Weekly</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => setValue('repeat','Monthly')}>Monthly</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => setValue('repeat','Yearly')}>Yearly</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => setValue('repeat', 'Daily')}>Daily</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => setValue('repeat', 'Weekly')}>Weekly</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => setValue('repeat', 'Monthly')}>Monthly</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => setValue('repeat', 'Yearly')}>Yearly</Dropdown.Item>
                                         <Dropdown.Divider />
-                                        <Dropdown.Item onClick={() => setValue('repeat','Custom')}>Custom...</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => setValue('repeat', 'Custom')}>Custom...</Dropdown.Item>
                                     </Dropdown.Menu>
                                 </Dropdown>
 
@@ -159,18 +197,57 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                                 <div className="p-2 bg-white rounded border border-secondary border-opacity-25" style={{ fontSize: '0.85rem' }}>
                                     <small className="text-muted d-block mb-1" style={{ fontSize: '0.8rem' }}>Ends</small>
                                     <div className="d-flex flex-column gap-1">
-                                        <Form.Check type="radio" name="endType" id="endType-never" label={<small>Never</small>} checked={endType === 'never'} onChange={() => setValue('endType', 'never')} style={{ fontSize: '0.85rem' }} />
+                                        <Form.Check type="radio" name="endType" id="endType-never" label={<small>Never</small>} checked={endType === 'never'}
+                                            onChange={() => {
+                                                setValue('endType', 'never');
+                                                setValue('endAfter', '');
+                                                setValue('endDate', null);
+                                            }} style={{ fontSize: '0.85rem' }} />
                                         <Form.Check type="radio" name="endType" id="endType-date" label={<small>On date</small>} checked={endType === 'endDate'} onChange={() => setValue('endType', 'endDate')} style={{ fontSize: '0.85rem' }} />
                                         {endType === 'endDate' && (
                                             <div className="ms-3 mt-1">
-                                                <Controller name="endDate" control={control} render={({ field }) => (<DatePicker selected={field.value} onChange={(d) => field.onChange(d)} dateFormat="MMM d, yyyy" className="form-control form-control-sm" />)} />
+                                                <Controller
+                                                    name="endDate"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <DatePicker
+                                                            selected={field.value}
+                                                            onChange={(d) => {
+                                                                field.onChange(d);
+                                                                // clear endAfter when an endDate is chosen
+                                                                setValue('endAfter', '');
+                                                            }}
+                                                            dateFormat="MM-dd-yyyy"
+                                                            className="form-control form-control-sm"
+                                                        />
+                                                    )}
+                                                />
                                             </div>
                                         )}
                                         <Form.Check type="radio" name="endType" id="endType-after" label={<small>After # times</small>} checked={endType === 'endAfter'} onChange={() => setValue('endType', 'endAfter')} style={{ fontSize: '0.85rem' }} />
                                         {endType === 'endAfter' && (
                                             <div className="ms-3 mt-1">
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
-                                                    <Controller name="endAfter" control={control} render={({ field }) => (<Form.Control type="number" min={1} placeholder="#" {...field} className="form-control-sm" style={{ maxWidth: '60px', fontSize: '0.85rem' }} />)} />
+                                                    <Controller
+                                                        name="endAfter"
+                                                        control={control}
+                                                        render={({ field }) => (
+                                                            <Form.Control
+                                                                type="number"
+                                                                min={1}
+                                                                placeholder="#"
+                                                                value={field.value}
+                                                                onChange={(e) => {
+                                                                    const v = e.target.value;
+                                                                    field.onChange(v);
+                                                                    // clear endDate when endAfter is set
+                                                                    setValue('endDate', null);
+                                                                }}
+                                                                className="form-control-sm"
+                                                                style={{ maxWidth: '60px', fontSize: '0.85rem' }}
+                                                            />
+                                                        )}
+                                                    />
                                                     <span>times</span>
                                                 </div>
                                             </div>
@@ -182,7 +259,16 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                     </div>
 
                     <div className="d-flex gap-1 pt-2">
-                        <Button variant="primary" type="submit" size="sm" className="flex-grow-1" style={{ fontSize: '0.85rem' }}>Save</Button>
+                        <Button 
+                            variant="primary" 
+                            type="submit" 
+                            size="sm" 
+                            className="flex-grow-1" 
+                            style={{ fontSize: '0.85rem' }}
+                           
+                        >
+                            Save
+                        </Button>
                         <Button variant="outline-secondary" size="sm" className="flex-grow-1" onClick={() => reset()} style={{ fontSize: '0.85rem' }}>Reset</Button>
                     </div>
                 </Form>
