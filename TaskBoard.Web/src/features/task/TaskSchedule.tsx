@@ -8,42 +8,50 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { taskScheduleSchema, type TaskScheduleSchema } from "../../lib/schemas/taskScheduleSchema";
 import { useToast } from "../../app/shared/components/toast/useToast";
 import { useTasks } from "../../lib/hooks/useTasks";
+import { formatToYMD } from "../../lib/util/util";
+import type { TaskSchedulePayload } from "../../lib/types/TaskSchedulePayload";
 
-interface TaskSchedulePayload {
-    taskId?: number;
-    startDate: string | null;
-    oneTimeOption: string | null;
-    repeat: string;
-    customRepeat: string;
-    customUnit: string;
-    selectedDays: number[];
-    endType: string;
-    endDate: string | null;
-    endAfter: string | null;
-}
+const QUICK_DATES = [
+  { id: 'today', label: 'Today', offset: 0 },
+  { id: 'tomorrow', label: 'Tomorrow', offset: 1 },
+  { id: 'nextWeek', label: 'Next Week', offset: 7 },
+  { id: 'nextMonth', label: 'Next Month', offset: null }
+] as const;
+
+const DAYS_ABBREV = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const DAYS_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+const commonStyles = {
+  btnSmall: { fontSize: '0.85rem', padding: '0.35rem 0.5rem' },
+  smallText: { fontSize: '0.85rem' },
+  smallLabel: { fontSize: '0.8rem' }
+};
+
+const DEFAULT_FORM_VALUES: Partial<TaskScheduleSchema> = {
+  startDate: null,
+  oneTimeOption: 'today',
+  repeat: 'None',
+  customRepeat: '',
+  customUnit: 'days',
+  selectedDays: [],
+  endType: 'never',
+  endDate: null,
+  endAfter: ''
+};
 
 export default function TaskSchedule({ userTask }: { userTask?: Task }) {
     const { saveTaskSchedules } = useTasks(userTask?.taskId);
+    const toast = useToast();
 
-    const { control, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<any>({
+    const { control, handleSubmit, reset, setValue, watch } = useForm<TaskScheduleSchema>({
         mode: 'onTouched',
         resolver: zodResolver(taskScheduleSchema),
         defaultValues: {
             taskId: userTask?.taskId,
-            startDate: userTask?.date,
-            oneTimeOption: 'today',
-            repeat: 'None',
-            customRepeat: '',
-            customUnit: 'days',
-            selectedDays: [],
-            endType: 'never',
-            endDate: null,
-            endAfter: ''
-        }
+            ...DEFAULT_FORM_VALUES,
+            startDate: userTask?.date ?? null
+        } as TaskScheduleSchema
     });
-
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const dayAbbrev = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
     const quickVal = watch('oneTimeOption');
     const repeat = watch('repeat');
@@ -52,68 +60,55 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
     const selectedDaysVal = watch('selectedDays') ?? [];
     const endType = watch('endType');
 
-    const toast = useToast();
-
     useEffect(() => {
         if (userTask) {
-            const meta = userTask as unknown as { details?: string; repeat?: 'None' | 'Daily' | 'Weekly' | 'Monthly' | 'Yearly' | 'Custom' };
+            const meta = userTask as unknown as { repeat?: 'None' | 'Daily' | 'Weekly' | 'Monthly' | 'Yearly' | 'Custom' };
             reset({
                 taskId: userTask.taskId,
-                startDate: userTask.date,
-                oneTimeOption: 'today',
-                repeat: meta.repeat ?? 'None',
-                customRepeat: '',
-                customUnit: 'days',
-                selectedDays: [],
-                endType: 'never',
-                endDate: null,
-                endAfter: ''
-            });
+                ...DEFAULT_FORM_VALUES,
+                startDate: userTask.date ?? null,
+                repeat: meta.repeat ?? 'None'
+            } as TaskScheduleSchema);
         }
     }, [userTask, reset]);
 
+    const setQuickDate = (id: string, offset: number | null) => {
+        const d = new Date();
+        if (offset !== null) d.setDate(d.getDate() + offset);
+        else d.setMonth(d.getMonth() + 1);
+        setValue('startDate', d);
+        setValue('oneTimeOption', id);
+    };
+
     const toggleDay = (idx: number) => {
-        const current: number[] = watch('selectedDays') ?? [];
-        const exists = current.includes(idx);
-        const next = exists ? current.filter(d => d !== idx) : [...current, idx];
-        setValue('selectedDays', next);
+        const current = watch('selectedDays') ?? [];
+        setValue('selectedDays', current.includes(idx) ? current.filter(d => d !== idx) : [...current, idx]);
     };
 
     const onSubmit = async (data: TaskScheduleSchema) => {
-         console.log('Submitting schedule:', data);
-
-        if (data.repeat == 'Weekly' && data.selectedDays.length === 0) {
+        if (data.repeat === 'Weekly' && (data.selectedDays ?? []).length === 0) {
             toast.error('Please select the days.');
             return;
         }
 
-        let sd = new Date(data.startDate);
-        let ed = new Date(data.endDate);
-
-        // Send data with exact field names expected by backend
         const payload: TaskSchedulePayload = {
             taskId: data.taskId,
-            startDate: `${sd.getMonth() + 1}-${sd.getDay()}-${sd.getFullYear()}`,
+            startDate: formatToYMD(data.startDate),
             oneTimeOption: data.oneTimeOption || null,
-            repeat: data.repeat,
-            customRepeat: data.customRepeat,
-            customUnit: data.customUnit,
+            repeat: data.repeat || 'None',
+            customRepeat: data.customRepeat || '',
+            customUnit: data.customUnit || 'days',
             selectedDays: data.selectedDays || [],
             endType: data.endType || 'never',
-            endDate: `${ed.getMonth() + 1}-${ed.getDay()}-${ed.getFullYear()}`,
+            endDate: formatToYMD(data.endDate),
             endAfter: data.endAfter || null
         };
 
-        console.log('Submitting schedule:', JSON.stringify(payload, null, 2));
-
         try {
-            const result = await saveTaskSchedules.mutateAsync(payload as unknown as TaskScheduleSchema);
-            console.log('Success response:', result);
+            await saveTaskSchedules.mutateAsync(payload as unknown as TaskScheduleSchema);
             toast.success('Schedule saved successfully!');
         } catch (error: unknown) {
-            console.error('Full error object:', error);
             const httpError = error as { response?: { data?: { message?: string } } };
-            console.error('Schedule save error:', httpError.response?.data || error);
             const errorMsg = httpError.response?.data?.message || 'Error adding the schedule.';
             toast.error(errorMsg);
         }
@@ -128,16 +123,23 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
 
                         <div className="mb-2">
                             <ButtonGroup size="sm" className="w-100" style={{ display: 'flex', gap: '2px' }}>
-                                <Button variant={quickVal === 'today' ? 'primary' : 'outline-primary'} onClick={() => { const d = new Date(); setValue('startDate', d); setValue('oneTimeOption', 'today'); }} className="flex-grow-1" style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem' }}>Today</Button>
-                                <Button variant={quickVal === 'tomorrow' ? 'primary' : 'outline-primary'} onClick={() => { const d = new Date(Date.now() + 24 * 60 * 60 * 1000); setValue('startDate', d); setValue('oneTimeOption', 'tomorrow'); }} className="flex-grow-1" style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem' }}>Tomorrow</Button>
-                                <Button variant={quickVal === 'nextWeek' ? 'primary' : 'outline-primary'} onClick={() => { const d = new Date(); d.setDate(d.getDate() + 7); setValue('startDate', d); setValue('oneTimeOption', 'nextWeek'); }} className="flex-grow-1" style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem' }}>Next Week</Button>
-                                <Button variant={quickVal === 'nextMonth' ? 'primary' : 'outline-primary'} onClick={() => { const d = new Date(); d.setMonth(d.getMonth() + 1); setValue('startDate', d); setValue('oneTimeOption', 'nextMonth'); }} className="flex-grow-1" style={{ fontSize: '0.85rem', padding: '0.35rem 0.5rem' }}>Next Month</Button>
+                                {QUICK_DATES.map(({ id, label, offset }) => (
+                                    <Button 
+                                        key={id}
+                                        variant={quickVal === id ? 'primary' : 'outline-primary'} 
+                                        onClick={() => setQuickDate(id, offset)} 
+                                        className="flex-grow-1" 
+                                        style={commonStyles.btnSmall}
+                                    >
+                                        {label}
+                                    </Button>
+                                ))}
                             </ButtonGroup>
                         </div>
 
                         <div className="mb-2">
-                            <small className="text-muted d-block mb-1" style={{ fontSize: '0.8rem' }}>Or pick a date:</small>
-                            <Controller name="startDate" control={control} render={({ field }) => (<DatePicker selected={field.value} onChange={(d) => { field.onChange(d); setValue('oneTimeOption', null); }} dateFormat="MM-dd-yyyy" className="form-control form-control-sm" />)} />
+                            <small className="text-muted d-block mb-1" style={commonStyles.smallLabel}>Or pick a date:</small>
+                            <Controller name="startDate" control={control} render={({ field }) => (<DatePicker selected={(field.value instanceof Date ? field.value : null) ?? null} onChange={(d) => { field.onChange(d); setValue('oneTimeOption', null); }} dateFormat="MM-dd-yyyy" className="form-control form-control-sm" />)} />
                         </div>
                     </div>
 
@@ -187,9 +189,9 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
 
                                 {repeat === 'Weekly' && (
                                     <div className="mb-2 p-2 bg-white rounded border border-secondary border-opacity-25">
-                                        <small className="text-muted d-block mb-1" style={{ fontSize: '0.8rem' }}>Days</small>
+                                        <small className="text-muted d-block mb-1" style={commonStyles.smallLabel}>Days</small>
                                         <ButtonGroup size="sm" className="w-100" style={{ display: 'flex', gap: '2px' }}>
-                                            {dayAbbrev.map((day, idx) => (<Button key={idx} variant={selectedDaysVal.includes(idx) ? 'primary' : 'outline-secondary'} size="sm" onClick={() => toggleDay(idx)} className="flex-grow-1" title={days[idx]} style={{ fontSize: '0.75rem', padding: '0.25rem 0.3rem' }}>{day}</Button>))}
+                                            {DAYS_ABBREV.map((day, idx) => (<Button key={idx} variant={selectedDaysVal.includes(idx) ? 'primary' : 'outline-secondary'} size="sm" onClick={() => toggleDay(idx)} className="flex-grow-1" title={DAYS_FULL[idx]} style={{ fontSize: '0.75rem', padding: '0.25rem 0.3rem' }}>{day}</Button>))}
                                         </ButtonGroup>
                                     </div>
                                 )}
@@ -211,10 +213,9 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                                                     control={control}
                                                     render={({ field }) => (
                                                         <DatePicker
-                                                            selected={field.value}
+                                                            selected={(field.value instanceof Date ? field.value : null) ?? null}
                                                             onChange={(d) => {
                                                                 field.onChange(d);
-                                                                // clear endAfter when an endDate is chosen
                                                                 setValue('endAfter', '');
                                                             }}
                                                             dateFormat="MM-dd-yyyy"
@@ -265,7 +266,7 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                             size="sm" 
                             className="flex-grow-1" 
                             style={{ fontSize: '0.85rem' }}
-                           
+                            
                         >
                             Save
                         </Button>

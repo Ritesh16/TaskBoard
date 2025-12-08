@@ -35,9 +35,19 @@ namespace TaskBoard.Service
                 UserId = 2
             };
 
+            var userCategory1 = new UserCategory()
+            {
+                CategoryId = 2,
+                Description = "Learning",
+                IsActive = true,
+                Name = "Learning",
+                UserId = 2
+            };
+
             if (list.Count == 0)
             {
                 list.Add(userCategory);
+                list.Add(userCategory1);
             }
 
             return list;

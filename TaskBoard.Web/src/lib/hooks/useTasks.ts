@@ -51,6 +51,7 @@ export const useTasks = (taskId?: number) => {
 
      const saveTaskSchedules = useMutation({
         mutationFn: async (taskSchedule: TaskScheduleSchema) => {
+            console.log(20, taskSchedule);
             const response = await agent.post('/tasks/SaveTaskSchedule', taskSchedule);
             return response.data;
         },
