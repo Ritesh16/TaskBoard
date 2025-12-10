@@ -5,4 +5,5 @@ export interface Task {
     categoryName: string;
     date?: Date;
     details?: string;
+    categoryId: number;
 }

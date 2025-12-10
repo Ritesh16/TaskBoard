@@ -1,19 +1,11 @@
 import { z } from 'zod';
 
 export const taskDetailSchema = z.object({
-  taskId: z.number()
-    .min(1, 'Task ID is required'),
+  taskId: z.number().optional(),
   
-  title: z.string()
-    .min(1, 'Title is required')
-    .min(3, 'Title must be at least 3 characters')
-    .max(100, 'Title must not exceed 100 characters'),
+  categoryId: z.number().optional(),
   
-  categoryId: z.number()
-    .min(1, 'Category is required'),
-  
-  details: z.string()
-    .max(2000, 'Details must not exceed 2000 characters'),
+  details: z.string().optional(),
   
 });
 

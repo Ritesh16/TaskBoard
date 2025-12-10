@@ -7,7 +7,7 @@
         public required string Title { get; set; }
         public required string CategoryName { get; set; }
         public int CategoryId { get; set; }
-        public string Description { get; set; }
+        public string Details { get; set; }
         public bool IsActive { get; set; }
         public DateTime Date { get; set; }
     }

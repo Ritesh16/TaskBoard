@@ -1,4 +1,5 @@
-﻿using TaskBoard.Domain.Task;
+﻿using TaskBoard.Domain.Category;
+using TaskBoard.Domain.Task;
 using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Service
@@ -30,7 +31,7 @@ namespace TaskBoard.Service
         public Task AddTaskDetail(TaskDetail taskDetail)
         {
             var task = list.FirstOrDefault(x => x.TaskId == taskDetail.TaskId);
-            task.Description = taskDetail.Details;
+            task.Details = taskDetail.Details;
             task.CategoryId = taskDetail.CategoryId;
             return Task.CompletedTask;
         }
@@ -59,10 +60,15 @@ namespace TaskBoard.Service
                 Date = DateTime.Now,
                 TaskId = 1,
                 Title = "Task-1",
-                UserId = 1
+                UserId = 2
             };
 
-            list.Add(userTask);
+            if (list.Count == 0)
+            {
+                list.Add(userTask);
+            }
+
+            
             return list;
         }
     }
