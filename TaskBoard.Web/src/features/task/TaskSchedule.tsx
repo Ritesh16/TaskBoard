@@ -30,7 +30,7 @@ const commonStyles = {
 const DEFAULT_FORM_VALUES: Partial<TaskScheduleSchema> = {
   startDate: null,
   oneTimeOption: 'today',
-  repeat: 'None',
+  repeat: 'OneTime',
   customRepeat: '',
   customUnit: 'days',
   selectedDays: [],
@@ -62,7 +62,7 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
 
     useEffect(() => {
         if (userTask) {
-            const meta = userTask as unknown as { repeat?: 'None' | 'Daily' | 'Weekly' | 'Monthly' | 'Yearly' | 'Custom' };
+            const meta = userTask as unknown as { repeat?: 'OneTime' | 'Daily' | 'Weekly' | 'Monthly' | 'Yearly' | 'Custom' };
             reset({
                 taskId: userTask.taskId,
                 ...DEFAULT_FORM_VALUES,
@@ -147,11 +147,11 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
 
                     <div className="mb-2">
                         <div className="d-flex align-items-center gap-2 mb-2">
-                            <Form.Check type="switch" id="repeat-switch" label={<small style={{ fontSize: '0.9rem' }}>🔄 Repeat</small>} checked={repeat !== 'None'} onChange={(e) => setValue('repeat', e.target.checked ? 'Daily' : 'None')} style={{ margin: 0 }} />
-                            {repeat !== 'None' && (<Badge bg="info" text="dark" style={{ fontSize: '0.75rem' }}>{repeat === 'Custom' ? `${customRepeatVal} ${customUnitVal}` : repeat}</Badge>)}
+                            <Form.Check type="switch" id="repeat-switch" label={<small style={{ fontSize: '0.9rem' }}>🔄 Repeat</small>} checked={repeat !== 'OneTime'} onChange={(e) => setValue('repeat', e.target.checked ? 'Daily' : 'OneTime')} style={{ margin: 0 }} />
+                            {repeat !== 'OneTime' && (<Badge bg="info" text="dark" style={{ fontSize: '0.75rem' }}>{repeat === 'Custom' ? `${customRepeatVal} ${customUnitVal}` : repeat}</Badge>)}
                         </div>
 
-                        {repeat !== 'None' && (
+                        {repeat !== 'OneTime' && (
                             <div className="bg-light p-2 rounded" style={{ borderLeft: '3px solid #0d6efd' }}>
                                 <Dropdown className="mb-2">
                                     <Dropdown.Toggle size="sm" variant="secondary" className="w-100" style={{ fontSize: '0.85rem' }}>{repeat}</Dropdown.Toggle>

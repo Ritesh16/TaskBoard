@@ -7,8 +7,7 @@ namespace TaskBoard.Service
     public class TaskServiceMock : ITaskService
     {
         List<UserTask> list = new List<UserTask>();
-        List<TaskSchedule> taskSchedules = new List<TaskSchedule>();
-
+       
         public TaskServiceMock()
         {
         }
@@ -34,11 +33,6 @@ namespace TaskBoard.Service
             task.Details = taskDetail.Details;
             task.CategoryId = taskDetail.CategoryId;
             return Task.CompletedTask;
-        }
-
-        public Task AddTaskSchedule(TaskSchedule taskSchedule)
-        {
-            throw new NotImplementedException();
         }
 
         public Task<UserTask> GetTask(int taskId)

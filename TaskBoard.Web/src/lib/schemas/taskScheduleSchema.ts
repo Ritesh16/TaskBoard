@@ -4,7 +4,7 @@ export const taskScheduleSchema = z.object({
   taskId: z.number().optional(),
   startDate: z.union([z.date(), z.string()]).nullable().optional(),
   oneTimeOption: z.string().nullable().optional(),
-  repeat: z.enum(['None', 'Daily', 'Weekly', 'Monthly', 'Yearly', 'Custom']).optional(),
+  repeat: z.enum(['OneTime', 'Daily', 'Weekly', 'Monthly', 'Yearly', 'Custom']).optional(),
   customRepeat: z.string().optional(),
   customUnit: z.enum(['days','weeks','months','years']).optional(),
   selectedDays: z.array(z.number()).optional(),

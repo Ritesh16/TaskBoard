@@ -2,15 +2,24 @@
 {
     public class TaskSchedule
     {
+        public int TaskScheduleId { get; set; }
         public int TaskId { get; set; }
-        public string? CustomRepeat { get; set; }
-        public string CustomUnit { get; set; }
-        public int? EndAfter { get; set; }
-        public DateTime? EndDate { get; set; }
-        public string OneTimeOption { get; set; }
-        public string Repeat { get; set; }
-        public int[] SelectedDays { get; set; }
+        public string Frequency { get; set; }
+        public string? Interval { get; set; }
+        public int[] DaysOfWeek { get; set; }
         public DateTime StartDate { get; set; }
-        public string EndType { get; set; }
+        public DateTime? EndDate { get; set; }
+        public int? StopAfter { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime RowCreateDate { get; set; }
+        public string RowCreatedBy { get; set; }
+        public DateTime RowUpdateDate { get; set; }
+        public string RowUpdatedBy { get; set; }
+
+        public TaskSchedule()
+        {
+            RowCreateDate = DateTime.Now;
+            RowUpdateDate = DateTime.Now;
+        }
     }
 }

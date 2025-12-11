@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using TaskBoard.Api.Dtos;
 using TaskBoard.Domain.Task;
 using TaskBoard.Service.Interfaces;
 
@@ -75,17 +76,6 @@ namespace TaskBoard.Api.Controllers
             //taskDetail.UserId = id;
 
             await taskService.AddTaskDetail(taskDetail);
-            return Ok();
-        }
-        [HttpPost("SaveTaskSchedule")]
-        public async Task<IActionResult> SaveTaskSchedule([FromBody] TaskSchedule taskSchedule)
-        {
-            //var userId = User.FindFirstValue("UserId");
-            //var id = Convert.ToInt32(userId);
-
-            ////taskDetail.UserId = id;
-
-            //await taskService.AddTaskDetail(taskDetail);
             return Ok();
         }
     }

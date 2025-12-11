@@ -7,7 +7,6 @@ namespace TaskBoard.Service.Interfaces
         Task<IEnumerable<UserTask>> GetTasks(int userId);
         Task AddTask(AddTask addTask);
         Task AddTaskDetail(TaskDetail taskDetail);
-        Task AddTaskSchedule(TaskSchedule taskSchedule);
         Task<UserTask> GetTask(int taskId);
     }
 }

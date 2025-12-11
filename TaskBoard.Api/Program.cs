@@ -32,6 +32,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IAccountService, AccountServiceMock>();
 builder.Services.AddSingleton<ICategoryService, CategoryServiceMock>();
 builder.Services.AddSingleton<ITaskService, TaskServiceMock>();
+builder.Services.AddSingleton<ITaskScheduleService, TaskScheduleServiceMock>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
 
 var app = builder.Build();
