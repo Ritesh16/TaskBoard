@@ -10,3 +10,16 @@ export interface TaskSchedulePayload {
     endDate: string | null;
     endAfter: string | null;
 }
+
+export interface TaskSchedule {
+    taskId : number;
+    taskScheduleId: number;
+    frequency: string;
+    interval?: string;
+    daysOfWeek?: number[];
+    startDate?: Date;
+    endDate?: Date;
+    stopAfter?: number;
+    isDeleted: boolean;
+    oneTimeOption: string;
+}

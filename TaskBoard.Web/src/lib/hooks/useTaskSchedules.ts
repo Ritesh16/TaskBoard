@@ -1,0 +1,35 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { TaskScheduleSchema } from "../schemas/taskScheduleSchema";
+import agent from "../api/agent";
+import type { TaskSchedule } from "../types/TaskSchedulePayload";
+
+export const useTaskSchedules = (taskId?: number) => {
+    const queryClient = useQueryClient();
+
+    const { data: taskSchedule, isLoading: taskScheduleLoading } = useQuery({
+        queryKey: ['tasksSchedule', taskId],
+        queryFn: async () => {
+            const response = await agent.get<TaskSchedule>(`/taskschedules?taskId=${taskId}`);
+            return response.data;
+        },
+        enabled: !!taskId
+    });
+    
+    const saveTaskSchedules = useMutation({
+        mutationFn: async (taskSchedule: TaskScheduleSchema) => {
+            const response = await agent.post('/taskschedules', taskSchedule);
+            return response.data;
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ['tasks']
+            });
+        }
+    });
+
+    return {
+        taskSchedule,
+        taskScheduleLoading,
+        saveTaskSchedules
+    }
+}
