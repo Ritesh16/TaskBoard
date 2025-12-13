@@ -40,7 +40,8 @@ const DEFAULT_FORM_VALUES: Partial<TaskScheduleSchema> = {
 };
 
 export default function TaskSchedule({ userTask }: { userTask?: Task }) {
-    const { taskSchedule, taskScheduleLoading, saveTaskSchedules } = useTaskSchedules(userTask?.taskId);
+    const { taskSchedule, taskScheduleLoading, saveTaskSchedules, deleteTaskSchedule } = useTaskSchedules(userTask?.taskId);
+    console.log(1, taskSchedule);
     const toast = useToast();
 
     const { control, handleSubmit, reset, setValue, watch } = useForm<TaskScheduleSchema>({
@@ -62,7 +63,9 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
 
     useEffect(() => {
         if (userTask) {
-            const meta = userTask as unknown as { repeat?: 'OneTime' | 'Daily' | 'Weekly' | 'Monthly' | 'Yearly' | 'Custom' };
+            const meta = userTask as unknown as { 
+                repeat?: 'OneTime' | 'Daily' | 'Weekly' | 'Monthly' | 'Yearly' | 'Custom' 
+            };
             reset({
                 taskId: userTask.taskId,
                 ...DEFAULT_FORM_VALUES,
@@ -104,6 +107,7 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
             endAfter: data.endAfter || null
         };
 
+
         try {
             await saveTaskSchedules.mutateAsync(payload as unknown as TaskScheduleSchema);
             toast.success('Schedule saved successfully!');
@@ -125,36 +129,62 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
     }
 
     if (taskSchedule) {
-        const ts = taskSchedule as unknown as { startDate?: string | Date | null; frequency?: string; selectedDays?: number[]; endType?: string; endDate?: string | Date | null; endAfter?: number | string; interval?: string };
-
+       
         return (
         <Card className="border-0 shadow-sm">
             <Card.Body className="p-3">
                 <Row className="align-items-center">
                     <Col>
                         <div className="d-flex align-items-center gap-2 mb-1">
-                            <h6 className="mb-0" style={{ fontSize: '0.95rem' }}>{ts.frequency === 'Custom' ? ts.interval : ts.frequency}</h6>
-                            <Badge bg="secondary" className="ms-1" style={{ fontSize: '0.75rem' }}>{ts.frequency === 'Custom' ? 'Custom' : ts.frequency}</Badge>
+                            <h6 className="mb-0" style={{ fontSize: '0.95rem' }}>
+                                {taskSchedule.frequency === 'Custom' ? taskSchedule.interval : taskSchedule.frequency}
+                            </h6>
                         </div>
-                        <div className="text-muted" style={{ fontSize: '0.85rem' }}>Starts {formatDisplayDate(ts.startDate)}</div>
+                        <div className="text-muted" style={{ fontSize: '0.85rem', textAlign: 'left' }}>
+                            Starts {formatDisplayDate(taskSchedule.startDate)}
+                        </div>
 
-                        {(ts.frequency === 'Weekly') && ((ts.selectedDays ?? []).length > 0) && (
+                        {(taskSchedule.frequency === 'Weekly') && ((taskSchedule.daysOfWeek ?? []).length > 0) && (
                             <div className="mt-2">
-                                {(ts.selectedDays ?? []).map((d: number) => (
-                                    <Badge key={d} bg="light" text="dark" className="me-1" style={{ fontSize: '0.8rem' }}>{DAYS_ABBREV[d]}</Badge>
+                                {(taskSchedule.daysOfWeek ?? []).map((d: number) => (
+                                    <Badge key={d} bg="light" text="dark" className="me-1" style={{ fontSize: '0.8rem' }}>
+                                        {DAYS_ABBREV[d]}
+                                    </Badge>
                                 ))}
                             </div>
                         )}
 
-                        {(ts.endType) && (ts.endType !== 'never') && (
-                            <div className="mt-2 text-muted" style={{ fontSize: '0.85rem' }}>
-                                {ts.endType === 'endDate' ? `Ends on ${formatDisplayDate(ts.endDate)}` : `Ends after ${ts.endAfter} times`}
+                        {(taskSchedule.endDate || taskSchedule.stopAfter) && (
+                            <div className="mt-2 text-muted" style={{ fontSize: '0.85rem', textAlign: 'left' }}>
+                                {taskSchedule.endDate ? 
+                                    `Ends on ${formatDisplayDate(taskSchedule.endDate)}` :
+                                     `Ends after ${taskSchedule.stopAfter} times`}
                             </div>
                         )}
                     </Col>
 
                     <Col xs="auto">
-                        <Button variant="outline-primary" size="sm">Edit</Button>
+                        <Button
+                            variant="outline-danger"
+                            size="sm"
+                            title="Delete schedule"
+                            onClick={async () => {
+                                if (!taskSchedule?.taskId) return;
+                                const confirmed = window.confirm('Delete this schedule?');
+                                if (!confirmed) return;
+                                try {
+                                    await deleteTaskSchedule.mutateAsync(taskSchedule.taskId);
+                                    toast.success('Schedule deleted');
+                                } catch (err: unknown) {
+                                    const httpError = err as { response?: { data?: { message?: string } } };
+                                    const errorMsg = httpError.response?.data?.message || 'Error deleting the schedule.';
+                                    toast.error(errorMsg);
+                                }
+                            }}
+                            disabled={deleteTaskSchedule.isLoading}
+                        >
+                            🗑
+                        </Button>
                     </Col>
                 </Row>
             </Card.Body>
@@ -167,7 +197,9 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                 <Card.Body className="p-3">
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <div className="mb-2">
-                            <h6 className="text-muted mb-2" style={{ fontSize: '0.9rem' }}><span style={{ fontSize: '16px' }}>📅</span> Due Date</h6>
+                            <h6 className="text-muted mb-2" style={{ fontSize: '0.9rem' }}>
+                                <span style={{ fontSize: '16px' }}>📅</span> Due Date
+                            </h6>
 
                             <div className="mb-2">
                                 <ButtonGroup size="sm" className="w-100" style={{ display: 'flex', gap: '2px' }}>
@@ -187,7 +219,10 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
 
                             <div className="mb-2">
                                 <small className="text-muted d-block mb-1" style={commonStyles.smallLabel}>Or pick a date:</small>
-                                <Controller name="startDate" control={control} render={({ field }) => (<DatePicker selected={(field.value instanceof Date ? field.value : null) ?? null} onChange={(d) => { field.onChange(d); setValue('oneTimeOption', null); }} dateFormat="MM-dd-yyyy" className="form-control form-control-sm" />)} />
+                                <Controller name="startDate" control={control} render={({ field }) =>
+                                     (<DatePicker selected={(field.value instanceof Date ? field.value : null) ?? null} 
+                                        onChange={(d) => { field.onChange(d); setValue('oneTimeOption', null); }} 
+                                        dateFormat="MM-dd-yyyy" className="form-control form-control-sm" />)} />
                             </div>
                         </div>
 
@@ -195,14 +230,25 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
 
                         <div className="mb-2">
                             <div className="d-flex align-items-center gap-2 mb-2">
-                                <Form.Check type="switch" id="repeat-switch" label={<small style={{ fontSize: '0.9rem' }}>🔄 Repeat</small>} checked={repeat !== 'OneTime'} onChange={(e) => setValue('repeat', e.target.checked ? 'Daily' : 'OneTime')} style={{ margin: 0 }} />
-                                {repeat !== 'OneTime' && (<Badge bg="info" text="dark" style={{ fontSize: '0.75rem' }}>{repeat === 'Custom' ? `${customRepeatVal} ${customUnitVal}` : repeat}</Badge>)}
+                                <Form.Check type="switch" id="repeat-switch" 
+                                    label={<small style={{ fontSize: '0.9rem' }}>🔄 Repeat</small>} 
+                                    checked={repeat !== 'OneTime'} 
+                                    onChange={(e) => setValue('repeat', e.target.checked ? 'Daily' : 'OneTime')} 
+                                    style={{ margin: 0 }} />
+                                {repeat !== 'OneTime' &&
+                                     (
+                                     <Badge bg="info" text="dark" style={{ fontSize: '0.75rem' }}>
+                                        {repeat === 'Custom' ? `${customRepeatVal} ${customUnitVal}` : repeat}
+                                    </Badge>
+                                )}
                             </div>
 
                             {repeat !== 'OneTime' && (
                                 <div className="bg-light p-2 rounded" style={{ borderLeft: '3px solid #0d6efd' }}>
                                     <Dropdown className="mb-2">
-                                        <Dropdown.Toggle size="sm" variant="secondary" className="w-100" style={{ fontSize: '0.85rem' }}>{repeat}</Dropdown.Toggle>
+                                        <Dropdown.Toggle size="sm" variant="secondary" className="w-100" style={{ fontSize: '0.85rem' }}>
+                                            {repeat}
+                                        </Dropdown.Toggle>
                                         <Dropdown.Menu className="w-100" style={{ fontSize: '0.85rem' }}>
                                             <Dropdown.Item onClick={() => setValue('repeat', 'Daily')}>Daily</Dropdown.Item>
                                             <Dropdown.Item onClick={() => setValue('repeat', 'Weekly')}>Weekly</Dropdown.Item>
@@ -218,7 +264,8 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                                             <small className="text-muted d-block mb-1" style={{ fontSize: '0.8rem' }}>Every</small>
                                             <Row className="g-1" style={{ fontSize: '0.85rem' }}>
                                                 <Col xs={6}>
-                                                    <Controller name="customRepeat" control={control} render={({ field }) => (<Form.Control type="number" min={1} placeholder="#" {...field} className="form-control-sm" />)} />
+                                                    <Controller name="customRepeat" control={control} 
+                                                        render={({ field }) => (<Form.Control type="number" min={1} placeholder="#" {...field} className="form-control-sm" />)} />
                                                 </Col>
                                                 <Col xs={6}>
                                                     <Dropdown onSelect={(k) => k && setValue('customUnit', k as 'days' | 'weeks' | 'months' | 'years')} className="w-100">

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskBoard.Domain.Task;
+﻿using TaskBoard.Domain.Task;
 using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Service
@@ -21,7 +16,18 @@ namespace TaskBoard.Service
 
         public Task<TaskSchedule> GetTaskSchedule(int taskId)
         {
-            return Task.FromResult(taskSchedules.FirstOrDefault(ts => ts.TaskId == taskId));
+            return Task.FromResult(taskSchedules.FirstOrDefault(ts => ts.TaskId == taskId && ts.IsDeleted == false));
+        }
+
+        public Task DeleteTaskSchedule(int taskId)
+        {
+            var schedule = taskSchedules.FirstOrDefault(ts => ts.TaskId == taskId);
+            if (schedule != null)
+            {
+                schedule.IsDeleted = true;
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

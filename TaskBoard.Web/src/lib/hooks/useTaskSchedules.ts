@@ -20,9 +20,25 @@ export const useTaskSchedules = (taskId?: number) => {
             const response = await agent.post('/taskschedules', taskSchedule);
             return response.data;
         },
-        onSuccess: async () => {
+        onSuccess: async (_data, variables) => {
+            const id = variables?.taskId ?? taskId;
+            if (!id) return;
             await queryClient.invalidateQueries({
-                queryKey: ['tasks']
+                queryKey: ['tasksSchedule', id]
+            });
+        }
+    });
+
+    const deleteTaskSchedule = useMutation({
+        mutationFn: async (id: number) => {
+            const response = await agent.delete(`/taskschedules?taskId=${id}`);
+            return response.data;
+        },
+        onSuccess: async (_data, variables) => {
+            const id = variables ?? taskId;
+            if (!id) return;
+            await queryClient.invalidateQueries({
+                queryKey: ['tasksSchedule', id]
             });
         }
     });
@@ -30,6 +46,7 @@ export const useTaskSchedules = (taskId?: number) => {
     return {
         taskSchedule,
         taskScheduleLoading,
-        saveTaskSchedules
+        saveTaskSchedules,
+        deleteTaskSchedule
     }
 }

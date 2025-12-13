@@ -172,6 +172,14 @@ export default function TaskDetail({ taskId }: { taskId?: number }) {
                   </p>
                 </div>
               )}
+              {(!userTask?.details || userTask.details.trim() === '') && (
+                <div>
+                  <small className="text-muted" style={{ fontSize: '0.8rem' }}>Details</small>
+                  <p className="mb-0" style={{ fontSize: '0.9rem', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                    No details
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </Form>

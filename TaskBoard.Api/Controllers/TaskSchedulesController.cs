@@ -65,5 +65,18 @@ namespace TaskBoard.Api.Controllers
 
             return Ok();
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteTaskSchedule(int taskId)
+        {
+            var name = User.FindFirstValue("name");
+            if (string.IsNullOrEmpty(name))
+            {
+                return Unauthorized();
+            }
+
+            await taskScheduleService.DeleteTaskSchedule(taskId);
+            return Ok();
+        }
     }
 }

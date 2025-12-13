@@ -6,5 +6,6 @@ namespace TaskBoard.Service.Interfaces
     {
         Task<TaskSchedule> GetTaskSchedule(int taskId);
         Task AddTaskSchedule(TaskSchedule taskSchedule);
+        Task DeleteTaskSchedule(int taskId);
     }
 }
