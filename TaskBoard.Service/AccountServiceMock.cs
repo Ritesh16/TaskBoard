@@ -10,12 +10,12 @@ namespace TaskBoard.Service
 
         public AccountServiceMock()
         {
-            users.Add(new User { Email = "ritesh@gmail.com", Name = "Ritesh Sharma", Id = 1});
-            users.Add(new User { Email = "user@gmail.com", Name = "Rob Smith", Id = 2 });
+            users.Add(new User { Email = "ritesh@gmail.com", Name = "Ritesh Sharma", UserId = 1, IsActive = true});
+            users.Add(new User { Email = "user@gmail.com", Name = "Rob Smith", UserId = 2, IsActive = true });
         }
         public async Task<User> GetUser(int id)
         {
-            return await Task.FromResult(users.FirstOrDefault(x => x.Id == id));
+            return await Task.FromResult(users.FirstOrDefault(x => x.UserId == id));
         }
 
         public async Task<User> GetUser(string email)
@@ -23,19 +23,14 @@ namespace TaskBoard.Service
             return await Task.FromResult(users.FirstOrDefault(x => x.Email == email));
         }
 
-        public async Task<bool> Login(Login login)
+        public async Task<bool> Login(string email, string password)
         {
-            return await Task.FromResult(users.Any(x => x.Email == login.Email));
+            return await Task.FromResult(users.Any(x => x.Email.ToLower() == email.ToLower()));
         }
 
-        public async Task<bool> Register(Register register)
+        public async Task<bool> Register(User user, UserCredential userCredential)
         {
-            var user = new User
-            {
-                Id = users.Count + 1,
-                Name = register.Name,
-                Email = register.Email
-            };
+            user.UserId = users.Count() + 1;
 
             users.Add(user);
             return await Task.FromResult(true);

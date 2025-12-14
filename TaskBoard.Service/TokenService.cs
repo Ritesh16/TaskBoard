@@ -25,7 +25,7 @@ namespace TaskBoard.Service
             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
             new Claim(JwtRegisteredClaimNames.Name, user.Name),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim("UserId", user.Id.ToString())
+            new Claim("UserId", user.UserId.ToString())
         };
 
             var token = new JwtSecurityToken(

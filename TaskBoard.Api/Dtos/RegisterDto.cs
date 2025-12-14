@@ -1,6 +1,6 @@
-﻿namespace TaskBoard.Domain.Account
+﻿namespace TaskBoard.Api.Dtos
 {
-    public class Register
+    public class RegisterDto
     {
         public required string Name { get; set; }
         public required string Email { get; set; }

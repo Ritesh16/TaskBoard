@@ -1,5 +1,4 @@
-﻿using TaskBoard.Domain.Category;
-using TaskBoard.Domain.Task;
+﻿using TaskBoard.Domain.Task;
 using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Service
@@ -12,26 +11,16 @@ namespace TaskBoard.Service
         {
         }
 
-        public Task AddTask(AddTask addTask)
+        public Task AddTask(UserTask userTask)
         {
-            var userTask = new UserTask 
-            { 
-                CategoryName = "General", 
-                Title = addTask.Title, 
-                TaskId = list.Count + 1, 
-                Date = DateTime.Now, 
-                UserId = addTask.UserId 
-            };
-
             list.Add(userTask);
-
             return Task.FromResult(userTask);
         }
-        public Task AddTaskDetail(TaskDetail taskDetail)
+        public Task AddTaskDetail(UserTask userTask)
         {
-            var task = list.FirstOrDefault(x => x.TaskId == taskDetail.TaskId);
-            task.Details = taskDetail.Details;
-            task.CategoryId = taskDetail.CategoryId;
+            var task = list.FirstOrDefault(x => x.TaskId == userTask.TaskId);
+            task.Details = userTask.Details;
+            task.CategoryId = userTask.CategoryId;
             return Task.CompletedTask;
         }
 
@@ -50,8 +39,11 @@ namespace TaskBoard.Service
         {
             var userTask = new UserTask()
             {
-                CategoryName = "General",
-                Date = DateTime.Now,
+                CategoryId = 1,
+                RowCreateDate = DateTime.Now,
+                RowCreatedBy = "user",
+                RowUpdateDate = DateTime.Now,
+                RowUpdatedBy = "user",
                 TaskId = 1,
                 Title = "Task-1",
                 UserId = 2
@@ -61,7 +53,6 @@ namespace TaskBoard.Service
             {
                 list.Add(userTask);
             }
-
             
             return list;
         }

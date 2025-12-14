@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TaskBoard.Api.Dtos;
 using TaskBoard.Domain.Account;
+using TaskBoard.Domain.User;
 using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Api.Controllers
@@ -21,9 +23,30 @@ namespace TaskBoard.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] Domain.Account.Register register)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            var result = await account.Register(register);
+            var user = new User
+            {
+                Name = registerDto.Name,
+                Email = registerDto.Email,
+                IsActive = true,
+                RowCreateDate = DateTime.Now,
+                RowCreatedBy = registerDto.Email,
+                RowUpdateDate = DateTime.Now,
+                RowUpdatedBy = registerDto.Email,
+            };
+
+            var userCredential = new UserCredential
+            {
+                Password = registerDto.Password,
+                IsActive = true,
+                RowCreateDate = DateTime.Now,
+                RowCreatedBy = registerDto.Email,
+                RowUpdateDate = DateTime.Now,
+                RowUpdatedBy = registerDto.Email,
+            };
+
+            var result = await account.Register(user, userCredential);
             if (result)
             {
                 return Ok();
@@ -32,17 +55,17 @@ namespace TaskBoard.Api.Controllers
         }
         
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] Domain.Account.Login login)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var result = await account.Login(login);
+            var result = await account.Login(loginDto.Email, loginDto.Password);
             if (result)
             {
-                var user = await account.GetUser(login.Email);
+                var user = await account.GetUser(loginDto.Email);
                 var token = tokenService.GenerateToken(user);
                 var output = new AuthResponse
                 {
                     Token = token,
-                    Email = login.Email
+                    Email = loginDto.Email
                 };
 
                 return Ok(output);

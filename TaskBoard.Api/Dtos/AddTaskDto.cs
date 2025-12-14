@@ -1,6 +1,6 @@
-﻿namespace TaskBoard.Domain.Task
+﻿namespace TaskBoard.Api.Dtos
 {
-    public class AddTask
+    public class AddTaskDto
     {
         public required string Title { get; set; }
         public int UserId { get; set; }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TaskBoard.Api.Dtos;
@@ -56,26 +57,39 @@ namespace TaskBoard.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] AddTask addTask)
+        public async Task<IActionResult> Post([FromBody] AddTaskDto addTask)
         {
             var userId = User.FindFirstValue("UserId");
             var id = Convert.ToInt32(userId);
 
             addTask.UserId = id;
 
-            await taskService.AddTask(addTask);
+            var userTask = new UserTask
+            {
+                CategoryId = 1,
+                Title = addTask.Title,
+                RowCreateDate = DateTime.Now,
+                RowCreatedBy = addTask.UserId.ToString(),
+                RowUpdateDate = DateTime.Now,
+                RowUpdatedBy = addTask.UserId.ToString(),
+                UserId = addTask.UserId
+            };
+
+            await taskService.AddTask(userTask);
             return Ok();
         }
 
         [HttpPost("SaveTaskDetails")]
-        public async Task<IActionResult> SaveTaskDetail([FromBody] TaskDetail taskDetail)
+        public async Task<IActionResult> SaveTaskDetail([FromBody] TaskDetailDto taskDetail)
         {
             var userId = User.FindFirstValue("UserId");
             var id = Convert.ToInt32(userId);
 
-            //taskDetail.UserId = id;
+            var task = await taskService.GetTask(taskDetail.TaskId);
+            task.Details = taskDetail.Details;
+            task.CategoryId = taskDetail.CategoryId;
 
-            await taskService.AddTaskDetail(taskDetail);
+            await taskService.AddTaskDetail(task);
             return Ok();
         }
     }

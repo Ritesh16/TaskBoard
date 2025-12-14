@@ -1,9 +1,10 @@
 ﻿namespace TaskBoard.Domain.User
 {
-    public class User
+    public class User : BaseDomain
     {
-        public required int Id { get; set; }
+        public int UserId { get; set; }
         public required string Name { get; set; }
         public required string Email { get; set; }
+        public required bool IsActive { get; set; }
     }
 }

@@ -41,7 +41,6 @@ const DEFAULT_FORM_VALUES: Partial<TaskScheduleSchema> = {
 
 export default function TaskSchedule({ userTask }: { userTask?: Task }) {
     const { taskSchedule, taskScheduleLoading, saveTaskSchedules, deleteTaskSchedule } = useTaskSchedules(userTask?.taskId);
-    console.log(1, taskSchedule);
     const toast = useToast();
 
     const { control, handleSubmit, reset, setValue, watch } = useForm<TaskScheduleSchema>({
@@ -372,6 +371,4 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
             </Card>
         );
     }
-
-
 }

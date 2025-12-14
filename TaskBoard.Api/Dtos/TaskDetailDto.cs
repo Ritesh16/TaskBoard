@@ -1,6 +1,6 @@
-﻿namespace TaskBoard.Domain.Task
+﻿namespace TaskBoard.Api.Dtos
 {
-    public class TaskDetail
+    public class TaskDetailDto
     {
         public int TaskId { get; set; }
         public int CategoryId { get; set; }
