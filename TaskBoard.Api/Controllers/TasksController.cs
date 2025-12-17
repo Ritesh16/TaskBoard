@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using TaskBoard.Api.Dtos;
+using TaskBoard.Dto;
 using TaskBoard.Domain.Task;
 using TaskBoard.Service.Interfaces;
 

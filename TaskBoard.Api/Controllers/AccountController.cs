@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using TaskBoard.Api.Dtos;
+using TaskBoard.Dto;
 using TaskBoard.Domain.Account;
 using TaskBoard.Domain.User;
 using TaskBoard.Service.Interfaces;
@@ -25,28 +25,7 @@ namespace TaskBoard.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            var user = new User
-            {
-                Name = registerDto.Name,
-                Email = registerDto.Email,
-                IsActive = true,
-                RowCreateDate = DateTime.Now,
-                RowCreatedBy = registerDto.Email,
-                RowUpdateDate = DateTime.Now,
-                RowUpdatedBy = registerDto.Email,
-            };
-
-            var userCredential = new UserCredential
-            {
-                Password = registerDto.Password,
-                IsActive = true,
-                RowCreateDate = DateTime.Now,
-                RowCreatedBy = registerDto.Email,
-                RowUpdateDate = DateTime.Now,
-                RowUpdatedBy = registerDto.Email,
-            };
-
-            var result = await account.Register(user, userCredential);
+            var result = await account.Register(registerDto);
             if (result)
             {
                 return Ok();
@@ -57,18 +36,18 @@ namespace TaskBoard.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var result = await account.Login(loginDto.Email, loginDto.Password);
+            var result = await account.Login(loginDto);
             if (result)
             {
-                var user = await account.GetUser(loginDto.Email);
-                var token = tokenService.GenerateToken(user);
-                var output = new AuthResponse
-                {
-                    Token = token,
-                    Email = loginDto.Email
-                };
-
-                return Ok(output);
+                var user = await account.GetUser(1);
+                //var token = tokenService.GenerateToken();
+                //var output = new AuthResponse
+                //{
+                //    Token = token,
+                //    Email = loginDto.Email
+                //};
+                return Ok();
+                ///return Ok(output);
             }
             return Unauthorized();
         }

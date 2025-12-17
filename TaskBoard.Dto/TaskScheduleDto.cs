@@ -1,4 +1,4 @@
-﻿namespace TaskBoard.Api.Dtos
+﻿namespace TaskBoard.Dto
 {
     public class TaskScheduleDto
     {

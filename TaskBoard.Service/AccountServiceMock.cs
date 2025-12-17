@@ -1,39 +1,46 @@
-﻿using TaskBoard.Domain.Account;
+﻿using AutoMapper;
+using TaskBoard.Data.Interfaces;
+using TaskBoard.Domain.Account;
 using TaskBoard.Domain.User;
+using TaskBoard.Dto;
 using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Service
 {
     public class AccountServiceMock : IAccountService
     {
-        List<User> users = new List<User>();
+        private readonly IUserRepository userRepository;
+        private readonly IMapper mapper;
 
-        public AccountServiceMock()
+        public AccountServiceMock(IUserRepository userRepository, IMapper mapper)
         {
-            users.Add(new User { Email = "ritesh@gmail.com", Name = "Ritesh Sharma", UserId = 1, IsActive = true});
-            users.Add(new User { Email = "user@gmail.com", Name = "Rob Smith", UserId = 2, IsActive = true });
-        }
-        public async Task<User> GetUser(int id)
-        {
-            return await Task.FromResult(users.FirstOrDefault(x => x.UserId == id));
+            this.userRepository = userRepository;
+            this.mapper = mapper;
         }
 
-        public async Task<User> GetUser(string email)
+        public async Task<UserDto> GetUser(int id)
         {
-            return await Task.FromResult(users.FirstOrDefault(x => x.Email == email));
+            var user = await userRepository.GetUser(id);
+            return mapper.Map<UserDto>(user);
         }
 
-        public async Task<bool> Login(string email, string password)
+        public async Task<bool> Login(LoginDto loginDto)
         {
-            return await Task.FromResult(users.Any(x => x.Email.ToLower() == email.ToLower()));
+            return await userRepository.Login(loginDto.Email, loginDto.Password);
         }
 
-        public async Task<bool> Register(User user, UserCredential userCredential)
+        public async Task<bool> Register(RegisterDto registerDto)
         {
-            user.UserId = users.Count() + 1;
+            var user = mapper.Map<User>(registerDto);
+            var addUserResult = await userRepository.AddUser(user);
+            var addCredentialResult = false;
+            if(addUserResult)
+            {
+                await userRepository.AddCredentials(null);
+            }
 
-            users.Add(user);
-            return await Task.FromResult(true);
+
+            return addUserResult && addCredentialResult;
         }
     }
 }

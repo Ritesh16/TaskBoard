@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.11.35222.181
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11222.16 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskBoard.Api", "TaskBoard.Api\TaskBoard.Api.csproj", "{00BE7F46-7041-4B2E-8211-CBCAA1160160}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskBoard.Domain", "TaskBoard.Domain\TaskBoard.Domain.csproj", "{E6DE0B1C-8AE9-4248-9915-0502F8F1B6BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskBoard.Service", "TaskBoard.Service\TaskBoard.Service.csproj", "{AFA84F37-003F-4A17-9DCF-7E4287B28D3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskBoard.Dto", "TaskBoard.Dto\TaskBoard.Dto.csproj", "{A50CB35C-5946-43F7-B329-932A912D777D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{AFA84F37-003F-4A17-9DCF-7E4287B28D3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFA84F37-003F-4A17-9DCF-7E4287B28D3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFA84F37-003F-4A17-9DCF-7E4287B28D3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A50CB35C-5946-43F7-B329-932A912D777D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A50CB35C-5946-43F7-B329-932A912D777D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A50CB35C-5946-43F7-B329-932A912D777D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A50CB35C-5946-43F7-B329-932A912D777D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

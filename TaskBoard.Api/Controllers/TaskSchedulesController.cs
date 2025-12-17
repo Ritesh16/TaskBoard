@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TaskBoard.Api.Dtos;
+using TaskBoard.Dto;
 using TaskBoard.Domain.Task;
 using TaskBoard.Service.Interfaces;
 
