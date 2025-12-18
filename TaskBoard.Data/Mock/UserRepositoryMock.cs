@@ -18,15 +18,21 @@ namespace TaskBoard.Data.Mock
             return Task.FromResult(true);
         }
 
-        public Task<bool> AddUser(User user)
+        public Task<User> AddUser(User user)
         {
             users.Add(user);
-            return Task.FromResult(true);
+            user.UserId = users.Count + 1;
+            return Task.FromResult(user);
         }
 
         public Task<User> GetUser(int userId)
         {
             return Task.FromResult(users.FirstOrDefault(x => x.UserId == userId));
+        }
+
+        public Task<User> GetUser(string email)
+        {
+            return Task.FromResult(users.FirstOrDefault(x => x.Email.ToLower() == email.ToLower()));
         }
 
         public Task<bool> Login(string email, string Password)

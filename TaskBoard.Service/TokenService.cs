@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using TaskBoard.Domain.User;
+using TaskBoard.Dto;
 using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Service
@@ -16,16 +16,16 @@ namespace TaskBoard.Service
         {
             this.configuration = configuration;
         }
-        public string GenerateToken(User user)
+        public string GenerateToken(UserDto userDto)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-            new Claim(JwtRegisteredClaimNames.Name, user.Name),
+            new Claim(JwtRegisteredClaimNames.Sub, userDto.Email),
+            new Claim(JwtRegisteredClaimNames.Name, userDto.Name),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim("UserId", user.UserId.ToString())
+            new Claim("UserId", userDto.UserId.ToString())
         };
 
             var token = new JwtSecurityToken(

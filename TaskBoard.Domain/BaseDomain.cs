@@ -7,5 +7,13 @@
         public DateTime RowUpdateDate { get; set; }
         public string RowUpdatedBy { get; set; }
 
+        public BaseDomain()
+        {
+            RowCreateDate = DateTime.Now;
+            RowUpdateDate = DateTime.Now;
+            RowCreatedBy = "System";
+            RowUpdatedBy = "System";
+        }
+
     }
 }

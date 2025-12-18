@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TaskBoard.Dto;
 using TaskBoard.Domain.Account;
-using TaskBoard.Domain.User;
 using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Api.Controllers
@@ -39,16 +37,17 @@ namespace TaskBoard.Api.Controllers
             var result = await account.Login(loginDto);
             if (result)
             {
-                var user = await account.GetUser(1);
-                //var token = tokenService.GenerateToken();
-                //var output = new AuthResponse
-                //{
-                //    Token = token,
-                //    Email = loginDto.Email
-                //};
-                return Ok();
-                ///return Ok(output);
+                var user = await account.GetUser(loginDto.Email);
+                var token = tokenService.GenerateToken(user);
+                var output = new AuthResponse
+                {
+                    Token = token,
+                    Email = loginDto.Email
+                };
+                
+                return Ok(output);
             }
+
             return Unauthorized();
         }
     }

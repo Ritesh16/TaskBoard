@@ -8,7 +8,7 @@ namespace TaskBoard.Service.Interfaces
         Task<bool> Register(RegisterDto registerDto);
         Task<bool> Login(LoginDto loginDto);
         Task<UserDto> GetUser(int id);
-        //Task<UserDto> GetUser(string email);
+        Task<UserDto> GetUser(string email);
 
     }
 }

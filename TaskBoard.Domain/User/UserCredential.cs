@@ -6,5 +6,10 @@
         public int UserId { get; set; }
         public required string Password { get; set; }
         public bool IsActive { get; set; }
+
+        public UserCredential()
+        {
+            IsActive = true;
+        }
     }
 }

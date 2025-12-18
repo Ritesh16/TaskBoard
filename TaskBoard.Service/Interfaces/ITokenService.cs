@@ -1,9 +1,9 @@
-﻿using TaskBoard.Domain.User;
+﻿using TaskBoard.Dto;
 
 namespace TaskBoard.Service.Interfaces
 {
     public interface ITokenService
     {
-        string GenerateToken(User user);
+        string GenerateToken(UserDto userDto);
     }
 }

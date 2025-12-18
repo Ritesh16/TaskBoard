@@ -25,7 +25,17 @@ namespace TaskBoard.Data
             throw new NotImplementedException();
         }
 
+        public Task<User> GetUser(string email)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<User> Login(string userName, string Password)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<User> IUserRepository.AddUser(User user)
         {
             throw new NotImplementedException();
         }

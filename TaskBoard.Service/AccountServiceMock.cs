@@ -24,6 +24,12 @@ namespace TaskBoard.Service
             return mapper.Map<UserDto>(user);
         }
 
+        public async Task<UserDto> GetUser(string email)
+        {
+            var user = await userRepository.GetUser(email);
+            return mapper.Map<UserDto>(user);
+        }
+
         public async Task<bool> Login(LoginDto loginDto)
         {
             return await userRepository.Login(loginDto.Email, loginDto.Password);
@@ -34,13 +40,14 @@ namespace TaskBoard.Service
             var user = mapper.Map<User>(registerDto);
             var addUserResult = await userRepository.AddUser(user);
             var addCredentialResult = false;
-            if(addUserResult)
+            if(addUserResult != null)
             {
-                await userRepository.AddCredentials(null);
+                var userCredential = mapper.Map<UserCredential>(registerDto);
+                userCredential.UserId = addUserResult.UserId;
+                addCredentialResult = await userRepository.AddCredentials(userCredential);
             }
 
-
-            return addUserResult && addCredentialResult;
+            return addUserResult != null && addCredentialResult;
         }
     }
 }
