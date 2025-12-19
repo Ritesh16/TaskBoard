@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using TaskBoard.Data.Interfaces;
 using TaskBoard.Domain.Account;
+using TaskBoard.Domain.Category;
 using TaskBoard.Domain.User;
 using TaskBoard.Dto;
 using TaskBoard.Service.Interfaces;
@@ -10,11 +11,13 @@ namespace TaskBoard.Service
     public class AccountServiceMock : IAccountService
     {
         private readonly IUserRepository userRepository;
+        private readonly ICategoryRepository categoryRepository;
         private readonly IMapper mapper;
 
-        public AccountServiceMock(IUserRepository userRepository, IMapper mapper)
+        public AccountServiceMock(IUserRepository userRepository, ICategoryRepository categoryRepository, IMapper mapper)
         {
             this.userRepository = userRepository;
+            this.categoryRepository = categoryRepository;
             this.mapper = mapper;
         }
 
@@ -45,6 +48,16 @@ namespace TaskBoard.Service
                 var userCredential = mapper.Map<UserCredential>(registerDto);
                 userCredential.UserId = addUserResult.UserId;
                 addCredentialResult = await userRepository.AddCredentials(userCredential);
+
+                var categoryDto = new UserCategoryDto
+                {
+                    UserId = addUserResult.UserId,
+                    Name = "General",
+                    Description = "General category",
+                    IsActive = true
+                };
+
+                await categoryRepository.AddCategory(mapper.Map<UserCategory>(categoryDto));
             }
 
             return addUserResult != null && addCredentialResult;

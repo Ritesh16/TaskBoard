@@ -19,8 +19,12 @@ namespace TaskBoard.Service
         public Task AddTaskDetail(UserTask userTask)
         {
             var task = list.FirstOrDefault(x => x.TaskId == userTask.TaskId);
-            task.Details = userTask.Details;
-            task.CategoryId = userTask.CategoryId;
+            if (task != null)
+            {
+                task.Details = userTask.Details;
+                task.CategoryId = userTask.CategoryId;
+            }
+
             return Task.CompletedTask;
         }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using TaskBoard.Dto;
 using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Api.Controllers
@@ -25,6 +26,17 @@ namespace TaskBoard.Api.Controllers
 
             var tasks = await categoryService.GetUserCategories(id);
             return Ok(tasks);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddUserCategory([FromBody]UserCategoryDto userCategoryDto)
+        {
+            var userId = User.FindFirstValue("UserId");
+            var id = Convert.ToInt32(userId);
+            userCategoryDto.UserId = id;
+
+            await categoryService.AddCategory(userCategoryDto);
+            return Ok();
         }
     }
 }
