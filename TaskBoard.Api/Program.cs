@@ -40,6 +40,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
 builder.Services.AddSingleton<IUserRepository, UserRepositoryMock>();
 builder.Services.AddSingleton<ICategoryRepository, CategoryRepositoryMock>();
+builder.Services.AddSingleton<ITaskRepository, TaskRepositoryMock>();
 
 builder.Services.AddSingleton<IAccountService, AccountServiceMock>();
 builder.Services.AddSingleton<ICategoryService, CategoryServiceMock>();

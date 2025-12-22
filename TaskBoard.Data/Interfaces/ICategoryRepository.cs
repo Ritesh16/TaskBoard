@@ -6,5 +6,6 @@ namespace TaskBoard.Data.Interfaces
     {
         Task<IEnumerable<UserCategory>> GetUserCategories(int userId);
         Task AddCategory(UserCategory userCategory);
+        Task<UserCategory> GetDefaultCategory(int userId);
     }
 }

@@ -12,6 +12,7 @@ export const useTasks = (taskId?: number) => {
         queryKey: ['tasks'],
         queryFn: async () => {
             const response = await agent.get<Task[]>('/tasks');
+            
             return response.data;
         }
     });

@@ -37,7 +37,6 @@ namespace TaskBoard.Api.Controllers
             }
             else
             {
-             
                 var user = await accountService.GetUser(id);
                 if (user == null)
                 {
@@ -64,18 +63,7 @@ namespace TaskBoard.Api.Controllers
 
             addTask.UserId = id;
 
-            var userTask = new UserTask
-            {
-                CategoryId = 1,
-                Title = addTask.Title,
-                RowCreateDate = DateTime.Now,
-                RowCreatedBy = addTask.UserId.ToString(),
-                RowUpdateDate = DateTime.Now,
-                RowUpdatedBy = addTask.UserId.ToString(),
-                UserId = addTask.UserId
-            };
-
-            await taskService.AddTask(userTask);
+            await taskService.AddTask(addTask);
             return Ok();
         }
 
@@ -84,12 +72,9 @@ namespace TaskBoard.Api.Controllers
         {
             var userId = User.FindFirstValue("UserId");
             var id = Convert.ToInt32(userId);
+            taskDetail.TaskId = id;
 
-            var task = await taskService.GetTask(taskDetail.TaskId);
-            task.Details = taskDetail.Details;
-            task.CategoryId = taskDetail.CategoryId;
-
-            await taskService.AddTaskDetail(task);
+            await taskService.AddTaskDetail(taskDetail);
             return Ok();
         }
     }

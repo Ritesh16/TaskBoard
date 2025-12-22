@@ -1,64 +1,53 @@
-﻿using TaskBoard.Domain.Task;
+﻿using AutoMapper;
+using TaskBoard.Data.Interfaces;
+using TaskBoard.Domain.Task;
+using TaskBoard.Dto;
 using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Service
 {
     public class TaskServiceMock : ITaskService
     {
-        List<UserTask> list = new List<UserTask>();
-       
-        public TaskServiceMock()
+        private readonly ITaskRepository taskRepository;
+        private readonly ICategoryRepository categoryRepository;
+        private readonly IMapper mapper;
+
+        public TaskServiceMock(ITaskRepository taskRepository, ICategoryRepository categoryRepository,
+                IMapper mapper)
         {
+            this.taskRepository = taskRepository;
+            this.categoryRepository = categoryRepository;
+            this.mapper = mapper;
         }
 
-        public Task AddTask(UserTask userTask)
+        public async Task AddTask(AddTaskDto userTaskDto)
         {
-            list.Add(userTask);
-            return Task.FromResult(userTask);
+            var userTask = mapper.Map<UserTask>(userTaskDto);
+            var userCategory = await categoryRepository.GetDefaultCategory(userTaskDto.UserId);
+            userTask.CategoryId = userCategory.CategoryId;
+            await taskRepository.AddTask(userTask);
         }
-        public Task AddTaskDetail(UserTask userTask)
+        public async Task AddTaskDetail(TaskDetailDto userTaskDto)
         {
-            var task = list.FirstOrDefault(x => x.TaskId == userTask.TaskId);
-            if (task != null)
-            {
-                task.Details = userTask.Details;
-                task.CategoryId = userTask.CategoryId;
-            }
+            var userTask = await taskRepository.GetTask(userTaskDto.TaskId);
+            userTask.Details = userTaskDto.Details;
+            userTask.CategoryId = userTaskDto.CategoryId;
+            userTask.RowUpdateDate = DateTime.Now;
+            userTask.RowUpdatedBy = "System";
 
-            return Task.CompletedTask;
-        }
-
-        public Task<UserTask> GetTask(int taskId)
-        {
-            return Task.FromResult(list.FirstOrDefault(x => x.TaskId == taskId));
+            await taskRepository.AddTaskDetail(userTask);
         }
 
-        public async Task<IEnumerable<UserTask>> GetTasks(int userId)
+        public async Task<UserTaskDto> GetTask(int taskId)
         {
-            var tasks = GetTasks().Where(x => x.UserId == userId);
-            return await Task.FromResult(tasks);
+            var userTask = await taskRepository.GetTask(taskId);
+            return mapper.Map<UserTaskDto>(userTask);
         }
 
-        private IEnumerable<UserTask> GetTasks()
+        public async Task<IEnumerable<UserTaskDto>> GetTasks(int userId)
         {
-            var userTask = new UserTask()
-            {
-                CategoryId = 1,
-                RowCreateDate = DateTime.Now,
-                RowCreatedBy = "user",
-                RowUpdateDate = DateTime.Now,
-                RowUpdatedBy = "user",
-                TaskId = 1,
-                Title = "Task-1",
-                UserId = 2
-            };
-
-            if (list.Count == 0)
-            {
-                list.Add(userTask);
-            }
-            
-            return list;
+            var userTasks = await taskRepository.GetTasks(userId);
+            return mapper.Map<IEnumerable<UserTaskDto>>(userTasks);
         }
     }
 }

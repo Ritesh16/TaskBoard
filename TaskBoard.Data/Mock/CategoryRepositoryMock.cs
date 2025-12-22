@@ -13,6 +13,14 @@ namespace TaskBoard.Data.Mock
             return Task.CompletedTask;
         }
 
+        public Task<UserCategory> GetDefaultCategory(int userId)
+        {
+            var userCategory = GetTasks().FirstOrDefault(x => x.UserId == userId &&
+                    x.Name.ToLower() == "general");
+
+            return Task.FromResult(userCategory);
+        }
+
         public Task<IEnumerable<UserCategory>> GetUserCategories(int userId)
         {
             return Task.FromResult(GetTasks().Where(x => x.UserId == userId));

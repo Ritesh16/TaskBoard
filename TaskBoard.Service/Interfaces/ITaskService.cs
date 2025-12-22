@@ -1,12 +1,12 @@
-﻿using TaskBoard.Domain.Task;
+﻿using TaskBoard.Dto;
 
 namespace TaskBoard.Service.Interfaces
 {
     public interface ITaskService
     {
-        Task<IEnumerable<UserTask>> GetTasks(int userId);
-        Task AddTask(UserTask userTask);
-        Task AddTaskDetail(UserTask userTask);
-        Task<UserTask> GetTask(int taskId);
+        Task<IEnumerable<UserTaskDto>> GetTasks(int userId);
+        Task AddTask(AddTaskDto userTaskDto);
+        Task AddTaskDetail(TaskDetailDto userTask);
+        Task<UserTaskDto> GetTask(int taskId);
     }
 }
