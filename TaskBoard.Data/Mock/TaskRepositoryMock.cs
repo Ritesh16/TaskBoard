@@ -8,6 +8,7 @@ namespace TaskBoard.Data.Mock
         List<UserTask> list = new List<UserTask>();
         public Task AddTask(UserTask userTask)
         {
+            userTask.TaskId = list.Count + 1;
             list.Add(userTask);
             return Task.FromResult(userTask);
         }

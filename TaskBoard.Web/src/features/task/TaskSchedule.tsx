@@ -10,6 +10,7 @@ import { useToast } from "../../app/shared/components/toast/useToast";
 import { formatToYMD } from "../../lib/util/util";
 import type { TaskSchedulePayload } from "../../lib/types/TaskSchedulePayload";
 import { useTaskSchedules } from "../../lib/hooks/useTaskSchedules";
+import { getDate } from "date-fns";
 
 const QUICK_DATES = [
     { id: 'today', label: 'Today', offset: 0 },
@@ -28,7 +29,7 @@ const commonStyles = {
 };
 
 const DEFAULT_FORM_VALUES: Partial<TaskScheduleSchema> = {
-    startDate: null,
+    startDate: (new Date()).toLocaleString(),
     oneTimeOption: 'today',
     repeat: 'OneTime',
     customRepeat: '',
@@ -220,7 +221,10 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                                 <small className="text-muted d-block mb-1" style={commonStyles.smallLabel}>Or pick a date:</small>
                                 <Controller name="startDate" control={control} render={({ field }) =>
                                      (<DatePicker selected={(field.value instanceof Date ? field.value : null) ?? null} 
-                                        onChange={(d) => { field.onChange(d); setValue('oneTimeOption', null); }} 
+                                        onChange={(d) => { 
+                                            field.onChange(d); 
+                                            setValue('oneTimeOption', null); 
+                                        }} 
                                         dateFormat="MM-dd-yyyy" className="form-control form-control-sm" />)} />
                             </div>
                         </div>

@@ -47,7 +47,16 @@ namespace TaskBoard.Service
         public async Task<IEnumerable<UserTaskDto>> GetTasks(int userId)
         {
             var userTasks = await taskRepository.GetTasks(userId);
-            return mapper.Map<IEnumerable<UserTaskDto>>(userTasks);
+            var userTaskDtoList = mapper.Map<IEnumerable<UserTaskDto>>(userTasks);
+            var categories = await categoryRepository.GetUserCategories(userId);
+
+            foreach (var userTaskDto in userTaskDtoList)
+            {
+                var category = categories.FirstOrDefault(c => c.CategoryId == userTaskDto.CategoryId);
+                userTaskDto.CategoryName = category == null ? "" : category.Name;
+            }
+
+            return userTaskDtoList;
         }
     }
 }

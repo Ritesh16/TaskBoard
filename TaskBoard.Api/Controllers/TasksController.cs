@@ -70,10 +70,6 @@ namespace TaskBoard.Api.Controllers
         [HttpPost("SaveTaskDetails")]
         public async Task<IActionResult> SaveTaskDetail([FromBody] TaskDetailDto taskDetail)
         {
-            var userId = User.FindFirstValue("UserId");
-            var id = Convert.ToInt32(userId);
-            taskDetail.TaskId = id;
-
             await taskService.AddTaskDetail(taskDetail);
             return Ok();
         }
