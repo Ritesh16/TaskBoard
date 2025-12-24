@@ -36,32 +36,8 @@ namespace TaskBoard.Api.Controllers
                 return Unauthorized();
             }
 
-            var taskSchedule = new TaskSchedule()
-            {
-                TaskId = taskScheduleDto.TaskId,
-                StartDate = taskScheduleDto.StartDate,
-                Frequency = taskScheduleDto.Repeat,
-                DaysOfWeek = taskScheduleDto.SelectedDays,
-                RowCreatedBy = name,
-                RowUpdatedBy = name
-            };
-
-            if (taskScheduleDto.EndType == "endDate")
-            {
-                taskSchedule.EndDate = taskScheduleDto.EndDate;
-            }
-
-            if (taskScheduleDto.EndType == "endAfter")
-            {
-                taskSchedule.StopAfter = taskScheduleDto.EndAfter;
-            }
-
-            if (taskScheduleDto.Repeat.ToLower() == "custom")
-            {
-                taskSchedule.Interval = $"Every {taskScheduleDto.CustomRepeat}-{taskScheduleDto.CustomUnit}";
-            }
-
-            await taskScheduleService.AddTaskSchedule(taskSchedule);
+            taskScheduleDto.UserName = name;
+            await taskScheduleService.AddTaskSchedule(taskScheduleDto);
 
             return Ok();
         }

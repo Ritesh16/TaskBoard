@@ -12,5 +12,6 @@
         public int[] SelectedDays { get; set; }
         public DateTime StartDate { get; set; }
         public string EndType { get; set; }
+        public string UserName { get; set; }
     }
 }

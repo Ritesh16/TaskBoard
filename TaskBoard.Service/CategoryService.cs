@@ -6,12 +6,12 @@ using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Service
 {
-    public class CategoryServiceMock : ICategoryService
+    public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository categoryRepository;
         private readonly IMapper mapper;
 
-        public CategoryServiceMock(ICategoryRepository categoryRepository, IMapper mapper)
+        public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
         {
             this.categoryRepository = categoryRepository;
             this.mapper = mapper;

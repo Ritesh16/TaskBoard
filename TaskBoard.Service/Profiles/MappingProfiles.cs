@@ -14,7 +14,7 @@ namespace TaskBoard.Service.Profiles
             CreateMap<RegisterDto, User>();
             CreateMap<AddTaskDto, UserTask>();
             CreateMap<UserTaskDto, UserTask>()
-                 .ForMember(x=>x.RowCreateDate, o=>o.MapFrom(u=>u.Date)).ReverseMap();
+                 .ForMember(x => x.RowCreateDate, o => o.MapFrom(u => u.Date)).ReverseMap();
 
             CreateMap<RegisterDto, UserCredential>();
             CreateMap<UserCategory, UserCategoryDto>().ReverseMap();

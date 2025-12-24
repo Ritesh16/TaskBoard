@@ -41,11 +41,12 @@ builder.Services.AddAutoMapper(typeof(MappingProfiles));
 builder.Services.AddSingleton<IUserRepository, UserRepositoryMock>();
 builder.Services.AddSingleton<ICategoryRepository, CategoryRepositoryMock>();
 builder.Services.AddSingleton<ITaskRepository, TaskRepositoryMock>();
+builder.Services.AddSingleton<ITaskScheduleRepository, TaskScheduleRepositoryMock>();
 
-builder.Services.AddSingleton<IAccountService, AccountServiceMock>();
-builder.Services.AddSingleton<ICategoryService, CategoryServiceMock>();
+builder.Services.AddSingleton<IAccountService, AccountService>();
+builder.Services.AddSingleton<ICategoryService, CategoryService>();
 builder.Services.AddSingleton<ITaskService, TaskServiceMock>();
-builder.Services.AddSingleton<ITaskScheduleService, TaskScheduleServiceMock>();
+builder.Services.AddSingleton<ITaskScheduleService, TaskScheduleService>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
 
 var app = builder.Build();

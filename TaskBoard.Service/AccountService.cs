@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using TaskBoard.Data.Interfaces;
-using TaskBoard.Domain.Account;
 using TaskBoard.Domain.Category;
 using TaskBoard.Domain.User;
 using TaskBoard.Dto;
@@ -8,13 +7,13 @@ using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Service
 {
-    public class AccountServiceMock : IAccountService
+    public class AccountService : IAccountService
     {
         private readonly IUserRepository userRepository;
         private readonly ICategoryRepository categoryRepository;
         private readonly IMapper mapper;
 
-        public AccountServiceMock(IUserRepository userRepository, ICategoryRepository categoryRepository, IMapper mapper)
+        public AccountService(IUserRepository userRepository, ICategoryRepository categoryRepository, IMapper mapper)
         {
             this.userRepository = userRepository;
             this.categoryRepository = categoryRepository;

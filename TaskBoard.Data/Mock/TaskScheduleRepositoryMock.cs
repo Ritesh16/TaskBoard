@@ -1,9 +1,9 @@
-﻿using TaskBoard.Domain.Task;
-using TaskBoard.Service.Interfaces;
+﻿using TaskBoard.Data.Interfaces;
+using TaskBoard.Domain.Task;
 
-namespace TaskBoard.Service
+namespace TaskBoard.Data.Mock
 {
-    public class TaskScheduleServiceMock : ITaskScheduleService
+    public class TaskScheduleRepositoryMock : ITaskScheduleRepository
     {
         List<TaskSchedule> taskSchedules = new List<TaskSchedule>();
         public Task AddTaskSchedule(TaskSchedule taskSchedule)
@@ -12,11 +12,6 @@ namespace TaskBoard.Service
             taskSchedules.Add(taskSchedule);
 
             return Task.FromResult(taskSchedule);
-        }
-
-        public Task<TaskSchedule> GetTaskSchedule(int taskId)
-        {
-            return Task.FromResult(taskSchedules.FirstOrDefault(ts => ts.TaskId == taskId && ts.IsDeleted == false));
         }
 
         public Task DeleteTaskSchedule(int taskId)
@@ -28,6 +23,11 @@ namespace TaskBoard.Service
             }
 
             return Task.CompletedTask;
+        }
+
+        public Task<TaskSchedule> GetTaskSchedule(int taskId)
+        {
+            return Task.FromResult(taskSchedules.FirstOrDefault(ts => ts.TaskId == taskId && ts.IsDeleted == false));
         }
     }
 }
