@@ -33,7 +33,7 @@ namespace TaskBoard.Service
 
             if (taskScheduleDto.EndType == "endAfter")
             {
-                taskSchedule.StopAfter = taskScheduleDto.EndAfter;
+                taskSchedule.StopAfter = Convert.ToInt32(taskScheduleDto.EndAfter);
             }
 
             if (taskScheduleDto.Repeat.ToLower() == "custom")

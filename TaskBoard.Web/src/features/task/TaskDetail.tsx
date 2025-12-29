@@ -6,7 +6,7 @@ import { useTasks } from '../../lib/hooks/useTasks';
 import { taskDetailSchema, type TaskDetailFormData } from '../../lib/schemas/taskDetailSchema';
 import { useCategory } from '../../lib/hooks/useCategory';
 import { useToast } from '../../app/shared/components/toast/useToast';
-import TaskSchedule from './TaskSchedule';
+import TaskScheduleUpdate from './TaskScheduleUpdate';
 
 export default function TaskDetail({ taskId }: { taskId?: number }) {
   const { userTask, userTaskLoading, saveTaskDetails } = useTasks(taskId);
@@ -185,7 +185,9 @@ export default function TaskDetail({ taskId }: { taskId?: number }) {
         </Form>
           <hr style={{ margin: '0.5rem 0' }} />
 
-        <TaskSchedule userTask={userTask} />
+        {/* <TaskSchedule userTask={userTask} /> */}
+
+         <TaskScheduleUpdate userTask={userTask} />
 
       </Card.Body>
     </Card>

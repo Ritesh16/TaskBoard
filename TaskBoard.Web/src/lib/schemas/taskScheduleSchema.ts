@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const taskScheduleSchema = z.object({
   taskId: z.number().optional(),
-  startDate: z.union([z.date(), z.string()]).nullable().optional(),
+  startDate: z.union([z.date(), z.string()]).nullable().optional().default('12-25-2025'),
   oneTimeOption: z.string().nullable().optional(),
   repeat: z.enum(['OneTime', 'Daily', 'Weekly', 'Monthly', 'Yearly', 'Custom']).optional(),
   customRepeat: z.string().optional(),
