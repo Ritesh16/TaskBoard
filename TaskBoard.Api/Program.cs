@@ -16,6 +16,10 @@ var configuration = builder.Configuration;
 
 builder.Services.AddControllers();
 
+var key = configuration["Jwt:Key"];
+if (string.IsNullOrEmpty(key))
+    throw new InvalidOperationException("JWT key is not configured (Jwt:Key).");
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -27,7 +31,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = configuration["Jwt:Issuer"],
             ValidAudience = configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+            IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(key))
         };
     });
 
@@ -51,10 +55,14 @@ builder.Services.AddSingleton<ITokenService, TokenService>();
 
 var app = builder.Build();
 
+var cors = configuration["Cors"];
+if (string.IsNullOrEmpty(cors))
+    throw new InvalidOperationException("JWT key is not configured (Jwt:cors).");
+
 app.UseCors(x => x.AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials()
-        .WithOrigins(configuration["Cors"]));
+        .WithOrigins(cors));
 
 
 // Configure the HTTP request pipeline.

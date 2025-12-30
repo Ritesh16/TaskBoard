@@ -3,6 +3,7 @@ import { Form } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import type { TaskScheduleSchema } from '../../lib/schemas/taskScheduleSchema';
 import { formatToYMD } from '../../lib/util/util';
+import { useState } from 'react';
 
 interface Props {
   control: Control<TaskScheduleSchema>;
@@ -11,6 +12,7 @@ interface Props {
 
 export default function Ends({ control, setValue }: Props) {
   const endType = useWatch({ control, name: 'endType', defaultValue: 'never' });
+  const [endDate, setEndDate] = useState<Date | null>();
 
   return (
     <div className="p-2 bg-white rounded border border-secondary border-opacity-25" style={{ fontSize: '0.85rem' }}>
@@ -42,22 +44,17 @@ export default function Ends({ control, setValue }: Props) {
 
         {endType === 'endDate' && (
           <div className="ms-3 mt-1">
-            <Controller
-              name="endDate"
-              control={control}
-              render={({ field }) => (
                 <DatePicker
-                  selected={field.value}
-                  onChange={(d) => {
-                    const d1 = formatToYMD(d);
-                    field.onChange(d1);
-                    setValue('endDate', d1);
+                  selected={endDate}
+                   dateFormat="MM-dd-yyyy"
+                   className="form-control form-control-sm"
+                   isClearable
+                  onChange={(d: Date | null) => {
+                    setEndDate(d);
+                    setValue('endDate', d ? formatToYMD(d) : null);
                   }}
-                  dateFormat="MM-dd-yyyy"
-                  className="form-control form-control-sm"
                 />
-              )}
-            />
+             
           </div>
         )}
 

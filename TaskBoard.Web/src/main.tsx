@@ -10,6 +10,7 @@ import { store, StoreContext } from './lib/stores/store'
 import { ToastProvider } from './app/shared/components/toast'
 import { ToastContainer } from 'react-bootstrap'
 import { AuthProvider } from './lib/context/AuthContext'
+import 'react-datepicker/dist/react-datepicker.css';
 
 const queryClient = new QueryClient();
 

@@ -1,4 +1,4 @@
-import { Badge, Button, ButtonGroup, Card, Col, Dropdown, Form, Row } from "react-bootstrap";
+import { Badge, Button, ButtonGroup, Card, Dropdown, Form } from "react-bootstrap";
 import { useTaskSchedules } from "../../lib/hooks/useTaskSchedules";
 import type { Task } from "../../lib/types/Task";
 import { useForm, useWatch } from "react-hook-form";
@@ -28,7 +28,7 @@ const DEFAULT_FORM_VALUES: Partial<TaskScheduleSchema> = {
 
 export default function TaskScheduleUpdate({ userTask }: { userTask?: Task }) {
     const [startDate, setStartDate] = useState<Date | null>(new Date());
-     const { taskSchedule, taskScheduleLoading, saveTaskSchedules } = useTaskSchedules(userTask?.taskId);
+    const { taskSchedule, taskScheduleLoading, saveTaskSchedules } = useTaskSchedules(userTask?.taskId);
     const toast = useToast();
 
     const { handleSubmit, setValue, control, reset } = useForm<TaskScheduleSchema>({
@@ -56,8 +56,7 @@ export default function TaskScheduleUpdate({ userTask }: { userTask?: Task }) {
     const repeat = useWatch({ control, name: 'repeat', defaultValue: 'OneTime' });
     const customRepeatVal = useWatch({ control, name: 'customRepeat', defaultValue: '' });
     const customUnitVal = useWatch({ control, name: 'customUnit', defaultValue: 'days' });
-    const endType = useWatch({ control, name: 'endType', defaultValue: 'never' });
-
+   
     const onSubmit = async (data: TaskScheduleSchema) => {
         console.log(data);
         if (data.repeat === 'Weekly' && (data.selectedDays ?? []).length === 0) {
