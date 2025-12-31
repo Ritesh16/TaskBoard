@@ -14,7 +14,7 @@ namespace TaskBoard.Service
         {
             this.taskScheduleRepository = taskScheduleRepository;
         }
-        public Task AddTaskSchedule(TaskScheduleDto taskScheduleDto)
+        public async Task AddTaskSchedule(TaskScheduleDto taskScheduleDto)
         {
             var taskSchedule = new TaskSchedule()
             {
@@ -41,7 +41,7 @@ namespace TaskBoard.Service
                 taskSchedule.Interval = $"Every {taskScheduleDto.CustomRepeat}-{taskScheduleDto.CustomUnit}";
             }
 
-            return Task.FromResult(taskSchedule);
+            await taskScheduleRepository.AddTaskSchedule(taskSchedule);
         }
 
         public async Task<TaskSchedule> GetTaskSchedule(int taskId)

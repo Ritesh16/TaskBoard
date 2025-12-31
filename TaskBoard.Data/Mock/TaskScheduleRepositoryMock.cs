@@ -16,7 +16,7 @@ namespace TaskBoard.Data.Mock
 
         public Task DeleteTaskSchedule(int taskId)
         {
-            var schedule = taskSchedules.FirstOrDefault(ts => ts.TaskId == taskId);
+            var schedule = taskSchedules.FirstOrDefault(ts => ts.TaskId == taskId && ts.IsDeleted == false);
             if (schedule != null)
             {
                 schedule.IsDeleted = true;

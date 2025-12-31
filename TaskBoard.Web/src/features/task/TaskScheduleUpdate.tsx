@@ -58,8 +58,7 @@ export default function TaskScheduleUpdate({ userTask }: { userTask?: Task }) {
     const customUnitVal = useWatch({ control, name: 'customUnit', defaultValue: 'days' });
    
     const onSubmit = async (data: TaskScheduleSchema) => {
-        console.log(data);
-        if (data.repeat === 'Weekly' && (data.selectedDays ?? []).length === 0) {
+       if (data.repeat === 'Weekly' && (data.selectedDays ?? []).length === 0) {
             toast.error('Please select the days.');
             return;
         }
@@ -77,9 +76,8 @@ export default function TaskScheduleUpdate({ userTask }: { userTask?: Task }) {
     if (taskScheduleLoading) return <div>Loading Tasks...</div>
 
     if (taskSchedule) {
-        <TaskScheduleDetails taskSchedule={taskSchedule} />
-    }
-    else {
+        return <TaskScheduleDetails taskSchedule={taskSchedule} />;
+    } else {
         return (
             <Card className="border-0 shadow-sm">
                 <Card.Body className="p-3">

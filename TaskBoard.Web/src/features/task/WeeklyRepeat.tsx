@@ -14,7 +14,6 @@ export default function WeeklyRepeat({ control, setValue }: Props) {
     const toggleDay = (idx: number) => {
         const current = selectedDaysVal.includes(idx) ? selectedDaysVal.filter(d => d !== idx) : [...selectedDaysVal, idx];
         setValue('selectedDays', current);
-        console.log(current);
     };
 
     return (

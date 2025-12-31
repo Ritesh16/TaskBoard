@@ -7,7 +7,7 @@ export const useTaskSchedules = (taskId?: number) => {
     const queryClient = useQueryClient();
 
     const { data: taskSchedule, isLoading: taskScheduleLoading } = useQuery({
-        queryKey: ['tasksSchedule', taskId],
+        queryKey: ['taskSchedule', taskId],
         queryFn: async () => {
             const response = await agent.get<TaskSchedule>(`/taskschedules?taskId=${taskId}`);
             return response.data;
@@ -24,7 +24,7 @@ export const useTaskSchedules = (taskId?: number) => {
             const id = variables?.taskId ?? taskId;
             if (!id) return;
             await queryClient.invalidateQueries({
-                queryKey: ['tasksSchedule', id]
+                queryKey: ['taskSchedule', id]
             });
         }
     });
@@ -38,7 +38,7 @@ export const useTaskSchedules = (taskId?: number) => {
             const id = variables ?? taskId;
             if (!id) return;
             await queryClient.invalidateQueries({
-                queryKey: ['tasksSchedule', id]
+                queryKey: ['taskSchedule', id]
             });
         }
     });
