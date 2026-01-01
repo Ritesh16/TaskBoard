@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,12 +13,13 @@ namespace TaskBoard.Data
 {
     public class UserRepository : IUserRepository
     {
-        public Task<bool> AddCredentials(UserCredential userCredential)
-        {
-            throw new NotImplementedException();
-        }
+        private readonly string _connectionString;
 
-        public Task<bool> AddUser(User user)
+        public UserRepository(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+        public Task<bool> AddCredentials(UserCredential userCredential)
         {
             throw new NotImplementedException();
         }
@@ -35,9 +39,17 @@ namespace TaskBoard.Data
             throw new NotImplementedException();
         }
 
-        Task<User> IUserRepository.AddUser(User user)
+        public async Task<User> AddUser(User user)
         {
-            throw new NotImplementedException();
+            using (IDbConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                const string sql = "INSERT INTO [USER](Name, Email) VALUES(@name, @email);  SELECT CAST(SCOPE_IDENTITY() AS int);";
+                var id = await connection.QuerySingleAsync<int>(sql, new { user.Name, user.Email, user.IsActive });
+                user.UserId = id;
+            }
+
+            return user;
         }
 
         Task<bool> IUserRepository.Login(string email, string Password)

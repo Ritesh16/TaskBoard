@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Collections.Generic;
 using TaskBoard.Data.Interfaces;
 using TaskBoard.Domain.Task;
 using TaskBoard.Dto;
@@ -57,6 +58,23 @@ namespace TaskBoard.Service
             }
 
             return userTaskDtoList;
+        }
+
+        public Task<IEnumerable<UserTaskDto>> GetTasksScheduled(int userId, DateTime startDate, DateTime endDate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<UserTaskDto>> GetTasksScheduledForToday(int userId)
+        {
+            IEnumerable<UserTaskDto> tasksScheduledForToday = new List<UserTaskDto>();
+            var userTasks = await taskRepository.GetTasks(userId);
+            for (int i = 0; i < userTasks.Count(); i++)
+            {
+                
+            }
+
+            return tasksScheduledForToday;
         }
     }
 }

@@ -8,5 +8,7 @@ namespace TaskBoard.Service.Interfaces
         Task AddTask(AddTaskDto userTaskDto);
         Task AddTaskDetail(TaskDetailDto userTask);
         Task<UserTaskDto> GetTask(int taskId);
+        Task<IEnumerable<UserTaskDto>> GetTasksScheduledForToday(int userId);
+        Task<IEnumerable<UserTaskDto>> GetTasksScheduled(int userId, DateTime startDate, DateTime endDate);
     }
 }
