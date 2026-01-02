@@ -1,11 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TaskBoard.Data.Interfaces;
 using TaskBoard.Domain.User;
 
@@ -19,24 +14,61 @@ namespace TaskBoard.Data
         {
             _connectionString = connectionString;
         }
-        public Task<bool> AddCredentials(UserCredential userCredential)
+        public async Task<bool> AddCredentials(UserCredential userCredential)
         {
-            throw new NotImplementedException();
+            var result = false;
+            using (IDbConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                const string sql = "INSERT INTO [USERCREDENTIAL](UserId,Password) VALUES(@userId, @password);";
+                await connection.ExecuteAsync(sql, new { userCredential.UserId, userCredential.Password });
+                result = true;
+            }
+
+            return result;
         }
 
-        public Task<User> GetUser(int userId)
+        public async Task<User> GetUser(int userId)
         {
-            throw new NotImplementedException();
+            using (IDbConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                const string sql = @"SELECT *
+                            FROM [USER] u 
+                            WHERE UserId=@userId";
+
+                var user = await connection.QueryFirstOrDefaultAsync<User>(sql, new { userId });
+                return user;
+            }
         }
 
-        public Task<User> GetUser(string email)
+        public async Task<User> GetUser(string email)
         {
-            throw new NotImplementedException();
-        }
+            using (IDbConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                const string sql = @"SELECT u.UserId, u.Name, u.Email, u.IsActive,
+                            uc.UserCredentialId, uc.UserId, uc.Password
+                            FROM [USER] u 
+                            INNER JOIN USERCREDENTIAL uc ON u.UserId=uc.UserId
+                            WHERE EMAIL=@email";
 
-        public Task<User> Login(string userName, string Password)
-        {
-            throw new NotImplementedException();
+
+                var user = await connection.QueryAsync<User, UserCredential, User>(sql, (user, userCredential) =>
+                {
+                    user.UserCredential = userCredential;
+                    return user;
+
+                }, new { email }, 
+                splitOn: "UserId");
+                
+                if (user != null)
+                {
+                    return user.FirstOrDefault();
+                }
+
+                return null!;
+            }
         }
 
         public async Task<User> AddUser(User user)
@@ -50,11 +82,6 @@ namespace TaskBoard.Data
             }
 
             return user;
-        }
-
-        Task<bool> IUserRepository.Login(string email, string Password)
-        {
-            throw new NotImplementedException();
         }
     }
 }

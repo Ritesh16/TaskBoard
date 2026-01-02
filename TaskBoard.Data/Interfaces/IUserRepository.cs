@@ -6,7 +6,7 @@ namespace TaskBoard.Data.Interfaces
     {
         Task<User> AddUser(User user);
         Task<bool> AddCredentials(UserCredential userCredential);
-        Task<bool> Login(string email, string Password);
+        //Task<bool> Login(string email, string Password, string hash);
         Task<User> GetUser(int userId);
         Task<User> GetUser(string email);
     }

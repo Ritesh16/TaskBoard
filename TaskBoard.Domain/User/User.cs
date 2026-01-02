@@ -6,6 +6,7 @@
         public required string Name { get; set; }
         public required string Email { get; set; }
         public required bool IsActive { get; set; }
+        public UserCredential UserCredential { get; set; }
 
         public User()
         {

@@ -34,7 +34,10 @@ namespace TaskBoard.Service
 
         public async Task<bool> Login(LoginDto loginDto)
         {
-            return await userRepository.Login(loginDto.Email, loginDto.Password);
+            var user = await userRepository.GetUser(loginDto.Email);
+            bool isValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.UserCredential.Password);
+
+            return isValid;
         }
 
         public async Task<bool> Register(RegisterDto registerDto)
@@ -46,6 +49,8 @@ namespace TaskBoard.Service
             {
                 var userCredential = mapper.Map<UserCredential>(registerDto);
                 userCredential.UserId = addUserResult.UserId;
+                string hash = BCrypt.Net.BCrypt.HashPassword(userCredential.Password, workFactor: 12);
+                userCredential.Password = hash;
                 addCredentialResult = await userRepository.AddCredentials(userCredential);
 
                 var categoryDto = new UserCategoryDto

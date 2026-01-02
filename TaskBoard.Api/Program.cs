@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using TaskBoard.Data;
 using TaskBoard.Data.Interfaces;
 using TaskBoard.Data.Mock;
@@ -42,9 +43,27 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
-builder.Services.AddSingleton<IUserRepository, UserRepositoryMock>();
-builder.Services.AddSingleton<ICategoryRepository, CategoryRepositoryMock>();
-builder.Services.AddSingleton<ITaskRepository, TaskRepositoryMock>();
+var connectionString = configuration.GetConnectionString("Default");
+if(string.IsNullOrEmpty(connectionString))
+    throw new InvalidOperationException("Database connection string is not configured.");
+
+builder.Services.AddSingleton<IUserRepository>(u =>
+{
+    return new UserRepository(connectionString);
+});
+
+builder.Services.AddSingleton<ICategoryRepository>(u =>
+{
+    return new CategoryRepository(connectionString);
+});
+
+builder.Services.AddSingleton<ITaskRepository>(u =>
+{
+    return new TaskRepository(connectionString);
+});
+
+//builder.Services.AddSingleton<ICategoryRepository, CategoryRepositoryMock>();
+//builder.Services.AddSingleton<ITaskRepository, TaskRepositoryMock>();
 builder.Services.AddSingleton<ITaskScheduleRepository, TaskScheduleRepositoryMock>();
 
 builder.Services.AddSingleton<IAccountService, AccountService>();
