@@ -6,6 +6,11 @@ namespace TaskBoard.Data.Mock
     public class TaskRepositoryMock : ITaskRepository
     {
         List<UserTask> list = new List<UserTask>();
+
+        public TaskRepositoryMock()
+        {
+        }
+
         public Task AddTask(UserTask userTask)
         {
             userTask.TaskId = list.Count + 1;
@@ -24,9 +29,9 @@ namespace TaskBoard.Data.Mock
             return Task.CompletedTask;
         }
 
-        public Task<UserTask> GetTask(int taskId)
+        public Task<UserTask> GetTask(int taskId, int userId)
         {
-            return Task.FromResult(list.FirstOrDefault(x => x.TaskId == taskId));
+            return Task.FromResult(list.FirstOrDefault(x => x.TaskId == taskId && x.UserId == userId));
         }
 
         public async Task<IEnumerable<UserTask>> GetTasks(int userId)

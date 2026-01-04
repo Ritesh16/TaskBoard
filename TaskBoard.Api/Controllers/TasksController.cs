@@ -51,7 +51,10 @@ namespace TaskBoard.Api.Controllers
         [HttpGet("{taskId}")]
         public async Task<IActionResult> GetTask(int taskId)
         {
-            var tasks = await taskService.GetTask(taskId);
+            var userId = User.FindFirstValue("UserId");
+            var id = Convert.ToInt32(userId);
+
+            var tasks = await taskService.GetTask(taskId, id);
             return Ok(tasks);
         }
 
@@ -70,6 +73,10 @@ namespace TaskBoard.Api.Controllers
         [HttpPost("SaveTaskDetails")]
         public async Task<IActionResult> SaveTaskDetail([FromBody] TaskDetailDto taskDetail)
         {
+            var userId = User.FindFirstValue("UserId");
+            var id = Convert.ToInt32(userId);
+
+            taskDetail.UserId = id;
             await taskService.AddTaskDetail(taskDetail);
             return Ok();
         }

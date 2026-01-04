@@ -30,7 +30,7 @@ namespace TaskBoard.Service
         }
         public async Task AddTaskDetail(TaskDetailDto userTaskDto)
         {
-            var userTask = await taskRepository.GetTask(userTaskDto.TaskId);
+            var userTask = await taskRepository.GetTask(userTaskDto.TaskId, userTaskDto.UserId);
             userTask.Details = userTaskDto.Details;
             userTask.CategoryId = userTaskDto.CategoryId;
             userTask.RowUpdateDate = DateTime.Now;
@@ -39,9 +39,9 @@ namespace TaskBoard.Service
             await taskRepository.AddTaskDetail(userTask);
         }
 
-        public async Task<UserTaskDto> GetTask(int taskId)
+        public async Task<UserTaskDto> GetTask(int taskId, int userId)
         {
-            var userTask = await taskRepository.GetTask(taskId);
+            var userTask = await taskRepository.GetTask(taskId, userId);
             return mapper.Map<UserTaskDto>(userTask);
         }
 

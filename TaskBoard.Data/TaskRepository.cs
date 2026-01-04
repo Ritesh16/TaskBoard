@@ -29,14 +29,45 @@ namespace TaskBoard.Data
             }
         }
 
-        public Task AddTaskDetail(UserTask userTask)
+        public async Task AddTaskDetail(UserTask userTask)
         {
-            throw new NotImplementedException();
+            using (IDbConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                const string sql = "UPDATE [Task] SET DESCRIPTION=@description, " +
+                    "CATEGORYID=@categoryId, " +
+                    "RowUpdatedDate=@rowUpdatedDate, " +
+                    "RowUpdatedBy=@rowUpdatedBY" +
+                    " WHERE TASKID=@taskId AND USERID=@userId";
+                await connection.ExecuteAsync(sql, new { Description=userTask.Details, userTask.CategoryId, RowUpdatedDate= DateTime.Now, RowUpdatedBy = userTask.UserId.ToString(), userTask.TaskId, userTask.UserId });
+            }
         }
 
-        public Task<UserTask> GetTask(int taskId)
+        public async Task<UserTask> GetTask(int taskId, int userId)
         {
-            throw new NotImplementedException();
+            using (IDbConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                const string sql = @"SELECT TaskId,
+                            CategoryId, 
+                            UserId, 
+                            Title, 
+                            Description as Details, 
+                            IsActive, 
+                            IsDeleted, 
+                            RowCreatedDate, 
+                            RowCreatedBy, 
+                            RowUpdatedDate, 
+                            RowUpdatedBy
+                            FROM [Task] 
+                            WHERE UserId=@userId AND
+                                  TaskId=@taskId AND
+                                  IsDeleted=0 AND
+                                  IsActive=1";
+
+                var userTask = await connection.QueryFirstOrDefaultAsync<UserTask>(sql, new { userId, taskId });
+                return userTask;
+            }
         }
 
         public async Task<IEnumerable<UserTask>> GetTasks(int userId)
