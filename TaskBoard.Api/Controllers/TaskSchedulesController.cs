@@ -51,7 +51,7 @@ namespace TaskBoard.Api.Controllers
                 return Unauthorized();
             }
 
-            await taskScheduleService.DeleteTaskSchedule(taskId);
+            await taskScheduleService.DeleteTaskSchedule(taskId, name);
             return Ok();
         }
     }

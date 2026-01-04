@@ -49,9 +49,9 @@ namespace TaskBoard.Service
             return await taskScheduleRepository.GetTaskSchedule(taskId);
         }
 
-        public async Task DeleteTaskSchedule(int taskId)
+        public async Task DeleteTaskSchedule(int taskId, string userName)
         {
-            await taskScheduleRepository.DeleteTaskSchedule(taskId);
+            await taskScheduleRepository.DeleteTaskSchedule(taskId, userName);
         }
     }
 }

@@ -6,6 +6,6 @@ namespace TaskBoard.Data.Interfaces
     {
         Task<TaskSchedule> GetTaskSchedule(int taskId);
         Task AddTaskSchedule(TaskSchedule taskSchedule);
-        Task DeleteTaskSchedule(int taskId);
+        Task DeleteTaskSchedule(int taskId, string userName);
     }
 }

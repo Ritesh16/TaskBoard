@@ -47,29 +47,43 @@ var connectionString = configuration.GetConnectionString("Default");
 if(string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("Database connection string is not configured.");
 
-builder.Services.AddSingleton<IUserRepository>(u =>
-{
-    return new UserRepository(connectionString);
-});
+bool runMock = Convert.ToBoolean(configuration["App: runMock"]);
 
-builder.Services.AddSingleton<ICategoryRepository>(u =>
+if (runMock)
 {
-    return new CategoryRepository(connectionString);
-});
-
-builder.Services.AddSingleton<ITaskRepository>(u =>
+    builder.Services.AddSingleton<ICategoryRepository, CategoryRepositoryMock>();
+    builder.Services.AddSingleton<ITaskRepository, TaskRepositoryMock>();
+    builder.Services.AddSingleton<ITaskScheduleRepository, TaskScheduleRepositoryMock>();
+}
+else
 {
-    return new TaskRepository(connectionString);
-});
+    builder.Services.AddSingleton<IUserRepository>(u =>
+    {
+        return new UserRepository(connectionString);
+    });
 
-//builder.Services.AddSingleton<ICategoryRepository, CategoryRepositoryMock>();
-//builder.Services.AddSingleton<ITaskRepository, TaskRepositoryMock>();
-builder.Services.AddSingleton<ITaskScheduleRepository, TaskScheduleRepositoryMock>();
+    builder.Services.AddSingleton<ICategoryRepository>(u =>
+    {
+        return new CategoryRepository(connectionString);
+    });
+
+    builder.Services.AddSingleton<ITaskRepository>(u =>
+    {
+        return new TaskRepository(connectionString);
+    });
+
+    builder.Services.AddSingleton<ITaskScheduleRepository>(u =>
+    {
+        return new TaskScheduleRepository(connectionString);
+    });
+}
+
 
 builder.Services.AddSingleton<IAccountService, AccountService>();
 builder.Services.AddSingleton<ICategoryService, CategoryService>();
 builder.Services.AddSingleton<ITaskService, TaskServiceMock>();
 builder.Services.AddSingleton<ITaskScheduleService, TaskScheduleService>();
+
 builder.Services.AddSingleton<ITokenService, TokenService>();
 
 var app = builder.Build();
