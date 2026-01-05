@@ -54,8 +54,8 @@ namespace TaskBoard.Api.Controllers
             var userId = User.FindFirstValue("UserId");
             var id = Convert.ToInt32(userId);
 
-            var tasks = await taskService.GetTask(taskId, id);
-            return Ok(tasks);
+            var task = await taskService.GetTask(taskId, id);
+            return Ok(task);
         }
 
         [HttpPost]

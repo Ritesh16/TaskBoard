@@ -81,7 +81,7 @@ else
 
 builder.Services.AddSingleton<IAccountService, AccountService>();
 builder.Services.AddSingleton<ICategoryService, CategoryService>();
-builder.Services.AddSingleton<ITaskService, TaskServiceMock>();
+builder.Services.AddSingleton<ITaskService, TaskService>();
 builder.Services.AddSingleton<ITaskScheduleService, TaskScheduleService>();
 
 builder.Services.AddSingleton<ITokenService, TokenService>();

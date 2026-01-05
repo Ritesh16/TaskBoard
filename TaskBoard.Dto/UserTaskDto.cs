@@ -12,5 +12,6 @@
         public bool IsDeleted { get; set; }
         public DateTime Date { get; set; }
         //public DateTime RowUpdateDate { get; set; }
+        public TaskScheduleDto Schedule { get; set; }
     }
 }

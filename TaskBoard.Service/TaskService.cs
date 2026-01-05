@@ -7,13 +7,13 @@ using TaskBoard.Service.Interfaces;
 
 namespace TaskBoard.Service
 {
-    public class TaskServiceMock : ITaskService
+    public class TaskService : ITaskService
     {
         private readonly ITaskRepository taskRepository;
         private readonly ICategoryRepository categoryRepository;
         private readonly IMapper mapper;
 
-        public TaskServiceMock(ITaskRepository taskRepository, ICategoryRepository categoryRepository,
+        public TaskService(ITaskRepository taskRepository, ICategoryRepository categoryRepository,
                 IMapper mapper)
         {
             this.taskRepository = taskRepository;

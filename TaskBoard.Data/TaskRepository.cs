@@ -39,7 +39,7 @@ namespace TaskBoard.Data
                     "RowUpdatedDate=@rowUpdatedDate, " +
                     "RowUpdatedBy=@rowUpdatedBY" +
                     " WHERE TASKID=@taskId AND USERID=@userId";
-                await connection.ExecuteAsync(sql, new { Description=userTask.Details, userTask.CategoryId, RowUpdatedDate= DateTime.Now, RowUpdatedBy = userTask.UserId.ToString(), userTask.TaskId, userTask.UserId });
+                await connection.ExecuteAsync(sql, new { Description = userTask.Details, userTask.CategoryId, RowUpdatedDate = DateTime.Now, RowUpdatedBy = userTask.UserId.ToString(), userTask.TaskId, userTask.UserId });
             }
         }
 
@@ -48,25 +48,45 @@ namespace TaskBoard.Data
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                const string sql = @"SELECT TaskId,
-                            CategoryId, 
-                            UserId, 
-                            Title, 
-                            Description as Details, 
-                            IsActive, 
-                            IsDeleted, 
-                            RowCreatedDate, 
-                            RowCreatedBy, 
-                            RowUpdatedDate, 
-                            RowUpdatedBy
-                            FROM [Task] 
-                            WHERE UserId=@userId AND
-                                  TaskId=@taskId AND
-                                  IsDeleted=0 AND
-                                  IsActive=1";
+                const string sql = @"SELECT t.TaskId,
+                            t.CategoryId, 
+                            t.UserId, 
+                            t.Title, 
+                            t.Description as Details, 
+                            t.IsActive, 
+                            t.IsDeleted, 
+                            t.RowCreatedDate, 
+                            t.RowCreatedBy, 
+                            t.RowUpdatedDate, 
+                            t.RowUpdatedBy,
+                            ts.TaskScheduleId,
+                            ts.Frequency,
+                            ts.Interval,
+                            ts.DaysOfWeek,
+                            ts.StartDate, 
+                            ts.EndDate,
+                            ts.StopAfter
+                            FROM [Task] t
+                            LEFT OUTER JOIN [TaskSchedule] ts ON t.TaskId=ts.TaskId AND  ts.IsDeleted=0
+                            WHERE t.UserId=@userId AND
+                                  t.TaskId=@taskId AND
+                                  t.IsDeleted=0 AND
+                                  t.IsActive=1";
 
-                var userTask = await connection.QueryFirstOrDefaultAsync<UserTask>(sql, new { userId, taskId });
-                return userTask;
+                var userTask = await connection.QueryAsync<UserTask, TaskSchedule, UserTask>(sql, (task, taskSchedule) =>
+                {
+                    task.Schedule = taskSchedule;
+                    return task;
+                },
+                new { userId, taskId },
+                splitOn: "TaskScheduleId");
+
+                if (userTask != null)
+                {
+                    return userTask.FirstOrDefault();
+                }
+
+                return null;
             }
         }
 
