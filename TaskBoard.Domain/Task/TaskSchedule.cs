@@ -6,7 +6,7 @@
         public int TaskId { get; set; }
         public string Frequency { get; set; }
         public string? Interval { get; set; }
-        public int[] DaysOfWeek { get; set; }
+        public string DaysOfWeek { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int? StopAfter { get; set; }

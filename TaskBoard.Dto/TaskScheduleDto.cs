@@ -7,7 +7,7 @@
         public string CustomUnit { get; set; }
         public string? EndAfter { get; set; }
         public DateTime? EndDate { get; set; }
-        public string OneTimeOption { get; set; }
+        public string OneTimeOption { get; set; } = string.Empty;
         public string Repeat { get; set; }
         public int[] SelectedDays { get; set; }
         public DateTime StartDate { get; set; }

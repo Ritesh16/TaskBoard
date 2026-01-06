@@ -19,12 +19,15 @@ export default function UserHome() {
                 id="list-group-tabs-example"
                 activeKey={activeKey}
                 onSelect={(k) => {
-                    debugger;
-                    //if (typeof k === 'number') {
-                        setActiveKey(k);
+                    // normalize the selection value and avoid passing unexpected types to setSelectedTaskId
+                    if (k == null) return;
+                    setActiveKey(k as string);
+                    if (typeof k === 'number') {
                         // clear section-3 whenever a new top-level section (col-1) is selected
-                        setSelectedTaskId(-1);
-                    //}
+                        setSelectedTaskId(k);
+                    } else {
+                        setSelectedTaskId(undefined);
+                    }
                 }}
             >
                 <Row>

@@ -14,6 +14,7 @@ import { useTaskSchedules } from "../../lib/hooks/useTaskSchedules";
 
 export default function TaskScheduleDetails({ taskSchedule }: { taskSchedule: TaskSchedule }) {
     const { deleteTaskSchedule } = useTaskSchedules(taskSchedule?.taskId);
+    console.log(10, deleteTaskSchedule);
     const toast = useToast();
 
     return (

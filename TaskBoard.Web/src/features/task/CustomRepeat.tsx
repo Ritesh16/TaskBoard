@@ -32,7 +32,7 @@ export default function CustomRepeat({ control, setValue }: Props) {
           />
         </Col>
         <Col xs={6}>
-          <Dropdown onSelect={(k) => k && setValue('customUnit', k as 'days' | 'weeks' | 'months' | 'years')} className="w-100">
+          <Dropdown onSelect={(k, e) => { e?.stopPropagation(); k && setValue('customUnit', k as 'days' | 'weeks' | 'months' | 'years') }} className="w-100">
             <Dropdown.Toggle size="sm" variant="secondary" className="w-100" style={{ fontSize: '0.85rem' }}>
               {customUnitVal}
             </Dropdown.Toggle>

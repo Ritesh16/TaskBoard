@@ -253,12 +253,12 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                                             {repeat}
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu className="w-100" style={{ fontSize: '0.85rem' }}>
-                                            <Dropdown.Item onClick={() => setValue('repeat', 'Daily')}>Daily</Dropdown.Item>
-                                            <Dropdown.Item onClick={() => setValue('repeat', 'Weekly')}>Weekly</Dropdown.Item>
-                                            <Dropdown.Item onClick={() => setValue('repeat', 'Monthly')}>Monthly</Dropdown.Item>
-                                            <Dropdown.Item onClick={() => setValue('repeat', 'Yearly')}>Yearly</Dropdown.Item>
+                                            <Dropdown.Item onClick={(e) => { e.stopPropagation(); setValue('repeat', 'Daily'); }}>Daily</Dropdown.Item>
+                                            <Dropdown.Item onClick={(e) => { e.stopPropagation(); setValue('repeat', 'Weekly'); }}>Weekly</Dropdown.Item>
+                                            <Dropdown.Item onClick={(e) => { e.stopPropagation(); setValue('repeat', 'Monthly'); }}>Monthly</Dropdown.Item>
+                                            <Dropdown.Item onClick={(e) => { e.stopPropagation(); setValue('repeat', 'Yearly'); }}>Yearly</Dropdown.Item>
                                             <Dropdown.Divider />
-                                            <Dropdown.Item onClick={() => setValue('repeat', 'Custom')}>Custom...</Dropdown.Item>
+                                            <Dropdown.Item onClick={(e) => { e.stopPropagation(); setValue('repeat', 'Custom'); }}>Custom...</Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
 
@@ -271,7 +271,7 @@ export default function TaskSchedule({ userTask }: { userTask?: Task }) {
                                                         render={({ field }) => (<Form.Control type="number" min={1} placeholder="#" {...field} className="form-control-sm" />)} />
                                                 </Col>
                                                 <Col xs={6}>
-                                                    <Dropdown onSelect={(k) => k && setValue('customUnit', k as 'days' | 'weeks' | 'months' | 'years')} className="w-100">
+                                                    <Dropdown onSelect={(k, e) => { e?.stopPropagation(); k && setValue('customUnit', k as 'days' | 'weeks' | 'months' | 'years') }} className="w-100">
                                                         <Dropdown.Toggle size="sm" variant="secondary" className="w-100" style={{ fontSize: '0.85rem' }}>{customUnitVal}</Dropdown.Toggle>
                                                         <Dropdown.Menu className="w-100" style={{ fontSize: '0.85rem' }}>
                                                             <Dropdown.Item eventKey="days">days</Dropdown.Item>

@@ -1,3 +1,5 @@
+import type { TaskSchedule } from "./TaskSchedulePayload";
+
 export interface Task {
     taskId: number;
     userId: number;
@@ -6,4 +8,5 @@ export interface Task {
     date?: Date;
     details?: string;
     categoryId: number;
+    schedule: TaskSchedule;
 }

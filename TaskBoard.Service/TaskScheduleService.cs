@@ -21,7 +21,7 @@ namespace TaskBoard.Service
                 TaskId = taskScheduleDto.TaskId,
                 StartDate = taskScheduleDto.StartDate,
                 Frequency = taskScheduleDto.Repeat,
-                DaysOfWeek = taskScheduleDto.SelectedDays,
+                DaysOfWeek = string.Join(",", taskScheduleDto.SelectedDays),
                 RowCreatedBy = taskScheduleDto.UserName,
                 RowUpdatedBy = taskScheduleDto.UserName
             };

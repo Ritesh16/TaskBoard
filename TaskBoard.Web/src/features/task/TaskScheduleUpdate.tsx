@@ -47,7 +47,7 @@ export default function TaskScheduleUpdate({ userTask }: { userTask?: Task }) {
         const d = new Date();
         if (offset !== null) d.setDate(d.getDate() + offset);
         else d.setMonth(d.getMonth() + 1);
-        setValue('startDate', d);
+        setValue('startDate', formatToYMD(d));
         setStartDate(d);
         setValue('oneTimeOption', id);
     };
@@ -58,6 +58,9 @@ export default function TaskScheduleUpdate({ userTask }: { userTask?: Task }) {
     const customUnitVal = useWatch({ control, name: 'customUnit', defaultValue: 'days' });
    
     const onSubmit = async (data: TaskScheduleSchema) => {
+        if(data.oneTimeOption===null) {
+            data.oneTimeOption = 'onetime';
+        }
        if (data.repeat === 'Weekly' && (data.selectedDays ?? []).length === 0) {
             toast.error('Please select the days.');
             return;
@@ -110,9 +113,10 @@ export default function TaskScheduleUpdate({ userTask }: { userTask?: Task }) {
                                     className="form-control form-control-sm"
                                     isClearable
                                     onChange={(d: Date | null) => {
+                                        console.log(d);
                                         setStartDate(d);
                                         setValue('oneTimeOption', null);
-                                        setValue('startDate', d ? formatToYMD(d) : null);
+                                         setValue('startDate', d ? formatToYMD(d) : null);
                                     }}
                                 />
                             </div>
@@ -140,12 +144,12 @@ export default function TaskScheduleUpdate({ userTask }: { userTask?: Task }) {
                                             {repeat}
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu className="w-100" style={{ fontSize: '0.85rem' }}>
-                                            <Dropdown.Item onClick={() => setValue('repeat', 'Daily')}>Daily</Dropdown.Item>
-                                            <Dropdown.Item onClick={() => setValue('repeat', 'Weekly')}>Weekly</Dropdown.Item>
-                                            <Dropdown.Item onClick={() => setValue('repeat', 'Monthly')}>Monthly</Dropdown.Item>
-                                            <Dropdown.Item onClick={() => setValue('repeat', 'Yearly')}>Yearly</Dropdown.Item>
+                                            <Dropdown.Item onClick={(e) => { e.stopPropagation(); setValue('repeat', 'Daily'); }}>Daily</Dropdown.Item>
+                                            <Dropdown.Item onClick={(e) => { e.stopPropagation(); setValue('repeat', 'Weekly'); }}>Weekly</Dropdown.Item>
+                                            <Dropdown.Item onClick={(e) => { e.stopPropagation(); setValue('repeat', 'Monthly'); }}>Monthly</Dropdown.Item>
+                                            <Dropdown.Item onClick={(e) => { e.stopPropagation(); setValue('repeat', 'Yearly'); }}>Yearly</Dropdown.Item>
                                             <Dropdown.Divider />
-                                            <Dropdown.Item onClick={() => setValue('repeat', 'Custom')}>Custom...</Dropdown.Item>
+                                            <Dropdown.Item onClick={(e) => { e.stopPropagation(); setValue('repeat', 'Custom'); }}>Custom...</Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
 

@@ -25,12 +25,12 @@ namespace TaskBoard.Data
                 connection.Open();
                 const string sql = "INSERT INTO [TaskSchedule](TaskId, Frequency, Interval, DaysOfWeek, StartDate, EndDate, StopAfter)" +
                     " VALUES(@taskId, @frequency, @interval, @daysOfWeek, @startDate, @endDate, @stopAfter);";
-                
+
                 await connection.ExecuteAsync(sql, new { 
                     taskSchedule.TaskId, 
-                    taskSchedule.Frequency, 
-                    taskSchedule.Interval, 
-                    taskSchedule.DaysOfWeek, 
+                    taskSchedule.Frequency,
+                    taskSchedule.Interval,
+                    taskSchedule.DaysOfWeek,
                     taskSchedule.StartDate, 
                     taskSchedule.EndDate,
                     taskSchedule.StopAfter 
