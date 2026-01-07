@@ -1,51 +1,91 @@
 import { Badge, Button, Card, Col, Row } from "react-bootstrap";
-import type { TaskSchedule } from "../../lib/types/TaskSchedulePayload";
+import type { TaskSchedulePayload } from "../../lib/types/TaskSchedulePayload";
 import { useToast } from "../../app/shared/components/toast/useToast";
 import { DAYS_ABBREV } from "../../lib/common/constants";
 import { useTaskSchedules } from "../../lib/hooks/useTaskSchedules";
 
- const formatDisplayDate = (d?: string | Date | null) => {
-        if (!d) return '';
-        try {
-            const dateObj = typeof d === 'string' ? new Date(d) : d;
-            return dateObj instanceof Date && !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString() : String(d);
-        } catch { return String(d); }
-    }
+const formatDisplayDate = (d?: string | Date | null) => {
+    if (!d) return '';
+    try {
+        const dateObj = typeof d === 'string' ? new Date(d) : d;
+        return dateObj instanceof Date && !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString() : String(d);
+    } catch { return String(d); }
+}
 
-export default function TaskScheduleDetails({ taskSchedule }: { taskSchedule: TaskSchedule }) {
+export default function TaskScheduleDetails({ taskSchedule }: { taskSchedule: TaskSchedulePayload }) {
     const { deleteTaskSchedule } = useTaskSchedules(taskSchedule?.taskId);
-    console.log(10, deleteTaskSchedule);
     const toast = useToast();
+
+    const deleteSchedule = async () => {
+        if (!taskSchedule?.taskId) return;
+        const confirmed = window.confirm('Delete this schedule?');
+        if (!confirmed) return;
+        try {
+            await deleteTaskSchedule.mutateAsync(taskSchedule.taskId);
+            toast.success('Schedule deleted');
+        } catch (err: unknown) {
+            const httpError = err as { response?: { data?: { message?: string } } };
+            const errorMsg = httpError.response?.data?.message || 'Error deleting the schedule.';
+            toast.error(errorMsg);
+        }
+    };
 
     return (
         <Card className="border-0 shadow-sm">
             <Card.Body className="p-3">
                 <Row className="align-items-center">
                     <Col>
-                        <div className="d-flex align-items-center gap-2 mb-1">
-                            <h6 className="mb-0" style={{ fontSize: '0.95rem' }}>
-                                {taskSchedule.frequency === 'Custom' ? taskSchedule.interval : taskSchedule.frequency}
-                            </h6>
-                        </div>
-                        <div className="text-muted" style={{ fontSize: '0.85rem', textAlign: 'left' }}>
-                            Starts {formatDisplayDate(taskSchedule.startDate)}
-                        </div>
 
-                        {(taskSchedule.frequency === 'Weekly') && ((taskSchedule.daysOfWeek ?? []).length > 0) && (
-                            <div className="mt-2">
-                                {(taskSchedule.daysOfWeek ?? []).map((d: number) => (
-                                    <Badge key={d} bg="light" text="dark" className="me-1" style={{ fontSize: '0.8rem' }}>
-                                        {DAYS_ABBREV[d]}
-                                    </Badge>
-                                ))}
+                        {(taskSchedule.repeat === 'OneTime') && (
+                            <div className="text-muted" style={{ fontSize: '0.85rem', textAlign: 'left' }}>
+                                Due on {formatDisplayDate(taskSchedule.startDate)}
                             </div>
                         )}
+                        {(taskSchedule.repeat === 'Daily' || taskSchedule.repeat === 'Monthly' || taskSchedule.repeat === 'Yearly') && (
+                            <>
+                                <div className="text-muted" style={{ fontSize: '0.85rem', textAlign: 'left' }}>
+                                    Starts {formatDisplayDate(taskSchedule.startDate)}
+                                </div>
+                                <div className="text-muted" style={{ fontSize: '0.85rem', textAlign: 'left' }}>
+                                    Repeat {taskSchedule.repeat}
+                                </div>
+                            </>
+                        )}
 
-                        {(taskSchedule.endDate || taskSchedule.stopAfter) && (
+                        {(taskSchedule.repeat === 'Weekly') && ((taskSchedule.selectedDays ?? []).length > 0) && (
+                            <>
+                                <div className="text-muted" style={{ fontSize: '0.85rem', textAlign: 'left' }}>
+                                    Starts {formatDisplayDate(taskSchedule.startDate)}
+                                </div>
+                                 <div className="text-muted" style={{ fontSize: '0.85rem', textAlign: 'left' }}>
+                                    Repeat {taskSchedule.repeat} on
+                                </div>
+                                <div className="mt-2">
+                                    {(taskSchedule.selectedDays ?? []).map((d: number) => (
+                                        <Badge key={d} bg="light" text="dark" className="me-1" style={{ fontSize: '0.8rem' }}>
+                                            {DAYS_ABBREV[d]}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+
+                        {(taskSchedule.repeat === 'Custom') && (
+                            <>
+                                <div className="text-muted" style={{ fontSize: '0.85rem', textAlign: 'left' }}>
+                                    Starts {formatDisplayDate(taskSchedule.startDate)}
+                                </div>
+                                 <div className="text-muted" style={{ fontSize: '0.85rem', textAlign: 'left' }}>
+                                    Repeat every {taskSchedule.customRepeat} {taskSchedule.customUnit}
+                                </div>
+                            </>
+                        )}
+
+                        {(taskSchedule.endDate || taskSchedule.endAfter) && (
                             <div className="mt-2 text-muted" style={{ fontSize: '0.85rem', textAlign: 'left' }}>
                                 {taskSchedule.endDate ?
                                     `Ends on ${formatDisplayDate(taskSchedule.endDate)}` :
-                                    `Ends after ${taskSchedule.stopAfter} times`}
+                                    `Ends after ${taskSchedule.endAfter} times`}
                             </div>
                         )}
                     </Col>
@@ -55,19 +95,7 @@ export default function TaskScheduleDetails({ taskSchedule }: { taskSchedule: Ta
                             variant="outline-danger"
                             size="sm"
                             title="Delete schedule"
-                            onClick={async () => {
-                                if (!taskSchedule?.taskId) return;
-                                const confirmed = window.confirm('Delete this schedule?');
-                                if (!confirmed) return;
-                                try {
-                                    await deleteTaskSchedule.mutateAsync(taskSchedule.taskId);
-                                    toast.success('Schedule deleted');
-                                } catch (err: unknown) {
-                                    const httpError = err as { response?: { data?: { message?: string } } };
-                                    const errorMsg = httpError.response?.data?.message || 'Error deleting the schedule.';
-                                    toast.error(errorMsg);
-                                }
-                            }}
+                            onClick={deleteSchedule}
                             disabled={deleteTaskSchedule.isLoading}
                         >
                             🗑

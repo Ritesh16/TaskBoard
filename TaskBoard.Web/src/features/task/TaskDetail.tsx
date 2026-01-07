@@ -10,7 +10,6 @@ import TaskScheduleUpdate from './TaskScheduleUpdate';
 
 export default function TaskDetail({ taskId }: { taskId?: number }) {
   const { userTask, userTaskLoading, saveTaskDetails } = useTasks(taskId);
-  console.log(1, userTask);
   const [isEditing, setIsEditing] = useState(false);
   const { userCategories } = useCategory();
   const toast = useToast();

@@ -60,6 +60,7 @@ namespace TaskBoard.Data
                             t.RowUpdatedDate, 
                             t.RowUpdatedBy,
                             ts.TaskScheduleId,
+                            ts.TaskId,
                             ts.Frequency,
                             ts.Interval,
                             ts.DaysOfWeek,

@@ -28,7 +28,8 @@ const DEFAULT_FORM_VALUES: Partial<TaskScheduleSchema> = {
 
 export default function TaskScheduleUpdate({ userTask }: { userTask?: Task }) {
     const [startDate, setStartDate] = useState<Date | null>(new Date());
-    const { taskSchedule, taskScheduleLoading, saveTaskSchedules } = useTaskSchedules(userTask?.taskId);
+    //const { taskSchedule, taskScheduleLoading, saveTaskSchedules } = useTaskSchedules(userTask?.taskId);
+    const { saveTaskSchedules } = useTaskSchedules(userTask?.taskId);
     const toast = useToast();
 
     const { handleSubmit, setValue, control, reset } = useForm<TaskScheduleSchema>({
@@ -76,10 +77,10 @@ export default function TaskScheduleUpdate({ userTask }: { userTask?: Task }) {
         }
     }
 
-    if (taskScheduleLoading) return <div>Loading Tasks...</div>
+    //if (taskScheduleLoading) return <div>Loading Tasks...</div>
 
-    if (taskSchedule) {
-        return <TaskScheduleDetails taskSchedule={taskSchedule} />;
+    if (userTask?.schedule) {
+        return <TaskScheduleDetails taskSchedule={userTask.schedule} />;
     } else {
         return (
             <Card className="border-0 shadow-sm">

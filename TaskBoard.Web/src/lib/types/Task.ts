@@ -1,4 +1,4 @@
-import type { TaskSchedule } from "./TaskSchedulePayload";
+import type { TaskSchedulePayload } from "./TaskSchedulePayload";
 
 export interface Task {
     taskId: number;
@@ -8,5 +8,5 @@ export interface Task {
     date?: Date;
     details?: string;
     categoryId: number;
-    schedule: TaskSchedule;
+    schedule: TaskSchedulePayload;
 }
