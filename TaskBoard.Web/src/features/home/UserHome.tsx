@@ -3,6 +3,7 @@ import { useState } from 'react';
 import AddTask from '../task/AddTask';
 import TaskList from '../task/TaskList';
 import TaskDetail from '../task/TaskDetail';
+import CategoryList from '../category/CategoryList';
 
 export default function UserHome() {
     const [activeKey, setActiveKey] = useState<string>('#link3');
@@ -46,23 +47,49 @@ export default function UserHome() {
                                 Completed
                             </ListGroup.Item>
                         </ListGroup>
+                        <hr />
+                         <ListGroup>
+                            <ListGroup.Item action eventKey="#link5">
+                                Category
+                            </ListGroup.Item>
+                            <ListGroup.Item action eventKey="#link6">
+                                Statistics
+                            </ListGroup.Item>
+                            <ListGroup.Item action eventKey="#link7">
+                                Summary
+                            </ListGroup.Item>
+                            <ListGroup.Item action eventKey="#link8">
+                                Trash
+                            </ListGroup.Item>
+                        </ListGroup>
                     </Col>
-                    <Col sm={6}>
+                    <Col sm={9}>
                         <Tab.Content>
                             <Tab.Pane eventKey="#link3">
-                                <AddTask />
-                              <TaskList onSelect={loadTask} />
+                                <Row>
+                                    <Col sm={8}>
+                                        <AddTask />
+                                        <TaskList onSelect={loadTask} />
+                                    </Col>
+
+                                    <Col sm={4}>
+                                        <TaskDetail taskId={selectedTaskId} />
+                                    </Col>
+                                </Row>
                             </Tab.Pane>
                             <Tab.Pane eventKey="#link2">
                                 Tab pane content 2
                             </Tab.Pane>
+                            <Tab.Pane eventKey="#link5">
+                                {/*<CategoryList />*/}
+                            </Tab.Pane>
                         </Tab.Content>
                     </Col>
-                    <Col sm={3}>
+                    {/* <Col sm={3}>
                         <div style={{ minHeight: '200px' }}>
                              <TaskDetail taskId={selectedTaskId} /> 
                         </div>
-                    </Col>
+                    </Col> */}
                 </Row>
             </Tab.Container>
         </>
