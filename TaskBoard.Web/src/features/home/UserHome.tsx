@@ -4,6 +4,7 @@ import AddTask from '../task/AddTask';
 import TaskList from '../task/TaskList';
 import TaskDetail from '../task/TaskDetail';
 import CategoryList from '../category/CategoryList';
+import CategoryHome from '../category/CategoryHome';
 
 export default function UserHome() {
     const [activeKey, setActiveKey] = useState<string>('#link3');
@@ -81,7 +82,7 @@ export default function UserHome() {
                                 Tab pane content 2
                             </Tab.Pane>
                             <Tab.Pane eventKey="#link5">
-                                {/*<CategoryList />*/}
+                                <CategoryHome />
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>
