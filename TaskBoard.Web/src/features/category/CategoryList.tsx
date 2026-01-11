@@ -24,7 +24,7 @@ export default function CategoryList() {
             </thead>
             <tbody>
                 {userCategories.map((uc) => (
-                    <tr>
+                    <tr key={uc.categoryId}>
                         <td>{uc.categoryId}</td>
                         <td>{uc.name}</td>
                         <td>{uc.tasks.length}</td>
