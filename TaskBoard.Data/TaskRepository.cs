@@ -1,13 +1,8 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using TaskBoard.Data.Interfaces;
-using TaskBoard.Domain.Category;
 using TaskBoard.Domain.Task;
-using TaskBoard.Domain.User;
 
 namespace TaskBoard.Data
 {
@@ -43,7 +38,7 @@ namespace TaskBoard.Data
             }
         }
 
-        public async Task<UserTask> GetTask(int taskId, int userId)
+        public async Task<UserTask?> GetTask(int taskId, int userId)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
@@ -82,12 +77,7 @@ namespace TaskBoard.Data
                 new { userId, taskId },
                 splitOn: "TaskScheduleId");
 
-                if (userTask != null)
-                {
-                    return userTask.FirstOrDefault();
-                }
-
-                return null;
+                return userTask?.FirstOrDefault();
             }
         }
 

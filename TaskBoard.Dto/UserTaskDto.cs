@@ -4,14 +4,15 @@
     {
         public int TaskId { get; set; }
         public int CategoryId { get; set; }
-        public string CategoryName { get; set; }
+        public string CategoryName { get; set; } = string.Empty;
         public int UserId { get; set; }
         public required string Title { get; set; }
-        public string Details { get; set; }
+        public string Details { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime Date { get; set; }
         //public DateTime RowUpdateDate { get; set; }
-        public TaskScheduleDto Schedule { get; set; }
+        public TaskScheduleDto Schedule { get; set; } = new();
+        public List<TaskInstanceDto> Instances { get; set; } = [];
     }
 }

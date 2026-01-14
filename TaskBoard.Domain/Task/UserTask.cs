@@ -10,5 +10,6 @@
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public TaskSchedule Schedule { get; set; } = null!;
+        public List<TaskInstance> TaskInstances { get; set; } = [];
     }
 }

@@ -25,6 +25,8 @@ namespace TaskBoard.Service.Profiles
                 .ForMember(x => x.EndAfter, o => o.MapFrom(u => u.StopAfter))
                 .ForMember(x => x.CustomUnit, o => o.MapFrom(u => u.Interval.Split(' ')[1].Split('-')[0]))
                 .ForMember(x => x.CustomRepeat, o => o.MapFrom(u => u.Interval.Split(' ')[1].Split('-')[1])).ReverseMap();
+
+            CreateMap<TaskInstance, TaskInstanceDto>().ReverseMap();
         }
     }
 

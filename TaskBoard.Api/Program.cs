@@ -76,6 +76,10 @@ else
     {
         return new TaskScheduleRepository(connectionString);
     });
+    builder.Services.AddSingleton<IScheduledTasksRepository>(u =>
+    {
+        return new ScheduledTasksRepository(connectionString);
+    });
 }
 
 
@@ -83,6 +87,7 @@ builder.Services.AddSingleton<IAccountService, AccountService>();
 builder.Services.AddSingleton<ICategoryService, CategoryService>();
 builder.Services.AddSingleton<ITaskService, TaskService>();
 builder.Services.AddSingleton<ITaskScheduleService, TaskScheduleService>();
+builder.Services.AddSingleton<IScheduledTasksService, ScheduledTasksService>();
 
 builder.Services.AddSingleton<ITokenService, TokenService>();
 

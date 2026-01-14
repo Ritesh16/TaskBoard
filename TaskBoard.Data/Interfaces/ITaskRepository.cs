@@ -7,6 +7,6 @@ namespace TaskBoard.Data.Interfaces
         Task<IEnumerable<UserTask>> GetTasks(int userId);
         Task AddTask(UserTask userTask);
         Task AddTaskDetail(UserTask userTask);
-        Task<UserTask> GetTask(int taskId, int userId);
+        Task<UserTask?> GetTask(int taskId, int userId);
     }
 }
