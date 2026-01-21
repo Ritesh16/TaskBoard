@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Threading.Tasks;
 using TaskBoard.Data.Interfaces;
 using TaskBoard.Dto;
 using TaskBoard.Dto.Constants;
@@ -27,6 +28,43 @@ namespace TaskBoard.Service
                 .Where(task => !HasCompletedToday(task))
                 .Where(ShouldScheduleTaskToday)
                 .ToList();
+        }
+
+        public async Task<IEnumerable<UserTaskDto>> GetScheduledTasksPastDueDate(int userId)
+        {
+            var scheduledTasks = await _scheduledTasksRepository.GetTasks(userId);
+            var scheduledTasksDto = _mapper.Map<IEnumerable<UserTaskDto>>(scheduledTasks);
+
+            return scheduledTasksDto
+                .Where(task => task.Schedule != null)
+                .Where(task => !HasCompletedToday(task))
+                .Where(ShouldScheduleTaskPastDue)
+                .ToList();
+        }
+
+        private bool ShouldScheduleTaskPastDue(UserTaskDto task)
+        {
+            return task.Schedule.Repeat switch
+            {
+                RepeatType.OneTime => IsOneTimeTaskPastDue(task),
+                RepeatType.Daily => IsRecurringTaskPastDue(task),
+                RepeatType.Weekly => IsWeeklyTaskDue(task),
+                RepeatType.Monthly => IsMonthlyTaskDue(task),
+                RepeatType.Yearly => IsYearlyTaskDue(task),
+                RepeatType.Custom => IsCustomTaskDue(task),
+                _ => false
+            };
+        }
+
+        private bool IsRecurringTaskPastDue(UserTaskDto task)
+        {
+            return task.Schedule.StartDate.Date < DateTime.Today &&
+                   (task.Schedule.EndDate == null || task.Schedule.EndDate.Value.Date >= DateTime.Today);
+        }
+
+        private bool IsOneTimeTaskPastDue(UserTaskDto task)
+        {
+            return task.Schedule.StartDate.Date <= DateTime.Now.Date;
         }
 
         private bool ShouldScheduleTaskToday(UserTaskDto task)
@@ -164,5 +202,7 @@ namespace TaskBoard.Service
                 "days" => lastExecutionDate.AddDays(interval),
                 _ => lastExecutionDate
             };
+
+       
     }
 }
