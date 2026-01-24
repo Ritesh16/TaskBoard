@@ -26,5 +26,15 @@ namespace TaskBoard.Api.Controllers
             var tasks = await _scheduledTasksService.GetScheduledTasksForToday(id);
             return Ok(tasks);
         }
+
+        [HttpGet("PastDue")]
+        public async Task<IActionResult> GetScheduledTasksPastDue()
+        {
+            var userId = User.FindFirstValue("UserId");
+            var id = Convert.ToInt32(userId);
+
+            var tasks = await _scheduledTasksService.GetScheduledTasksPastDueDate(id);
+            return Ok(tasks);
+        }
     }
 }

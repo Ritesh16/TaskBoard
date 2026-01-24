@@ -41,32 +41,6 @@ namespace TaskBoard.Service
                 .Where(ShouldScheduleTaskPastDue)
                 .ToList();
         }
-
-        private bool ShouldScheduleTaskPastDue(UserTaskDto task)
-        {
-            return task.Schedule.Repeat switch
-            {
-                RepeatType.OneTime => IsOneTimeTaskPastDue(task),
-                RepeatType.Daily => IsRecurringTaskPastDue(task),
-                RepeatType.Weekly => IsWeeklyTaskDue(task),
-                RepeatType.Monthly => IsMonthlyTaskDue(task),
-                RepeatType.Yearly => IsYearlyTaskDue(task),
-                RepeatType.Custom => IsCustomTaskDue(task),
-                _ => false
-            };
-        }
-
-        private bool IsRecurringTaskPastDue(UserTaskDto task)
-        {
-            return task.Schedule.StartDate.Date < DateTime.Today &&
-                   (task.Schedule.EndDate == null || task.Schedule.EndDate.Value.Date >= DateTime.Today);
-        }
-
-        private bool IsOneTimeTaskPastDue(UserTaskDto task)
-        {
-            return task.Schedule.StartDate.Date <= DateTime.Now.Date;
-        }
-
         private bool ShouldScheduleTaskToday(UserTaskDto task)
         {
             return task.Schedule.Repeat switch
@@ -81,6 +55,43 @@ namespace TaskBoard.Service
             };
         }
 
+        private bool ShouldScheduleTaskPastDue(UserTaskDto task)
+        {
+            return task.Schedule.Repeat switch
+            {
+                RepeatType.OneTime => IsOneTimeTaskPastDue(task),
+                RepeatType.Daily => IsDailyTaskPastDue(task),
+                RepeatType.Weekly => IsWeeklyTaskPastDue(task),
+                RepeatType.Monthly => IsMonthlyTaskDue(task),
+                RepeatType.Yearly => IsYearlyTaskDue(task),
+                RepeatType.Custom => IsCustomTaskDue(task),
+                _ => false
+            };
+        }
+
+        private bool IsDailyTaskPastDue(UserTaskDto task)
+        {
+            var result = false;
+            if (!IsRecurringTaskActive(task))
+                return result;
+
+            var nextExecutionDate = task.Schedule.StartDate;
+            var lastExecution = task.Instances.OrderByDescending(x => x.CompletedDate).FirstOrDefault();
+
+            if (lastExecution != null)
+            {
+                nextExecutionDate = GetNextExecutionDate("daily", lastExecution.CompletedDate, 1);
+            }
+
+            result = nextExecutionDate.Date < DateTime.Today;
+            return result;
+        }
+
+        private bool IsOneTimeTaskPastDue(UserTaskDto task)
+        {
+            return task.Schedule.StartDate.Date <= DateTime.Now.Date;
+        }
+
         private bool IsOneTimeTaskDue(UserTaskDto task)
         {
             return task.Schedule.StartDate.Date == DateTime.Now.Date;
@@ -90,13 +101,42 @@ namespace TaskBoard.Service
         {
             return IsTaskWithinDateRange(task) && IsWithinEndAfterLimit(task);
         }
+        private bool IsWeeklyTaskPastDue(UserTaskDto task)
+        {
+            if (!IsRecurringTaskActive(task))
+                return false;
+
+            var nextExecutionDate = task.Schedule.StartDate;
+            var lastExecution = task.Instances.OrderByDescending(x => x.CompletedDate).FirstOrDefault();
+
+            if (lastExecution != null)
+            {
+                nextExecutionDate = GetNextExecutionDate("weeks", lastExecution.CompletedDate, 1);
+            }
+
+            var days = task.Schedule.SelectedDays
+                .Select(day => day)
+                .OrderBy(d => d)
+                .ToList();
+
+            var startingDay = days[0];
+
+            if(task.Schedule.StartDate.DayOfWeek != (DayOfWeek)startingDay)
+            {
+                var difference = Math.Abs(Convert.ToInt32(task.Schedule.StartDate.DayOfWeek) - startingDay);
+                nextExecutionDate = nextExecutionDate.AddDays(difference);
+            }
+
+
+            return nextExecutionDate.Date < DateTime.Today;
+        }
 
         private bool IsWeeklyTaskDue(UserTaskDto task)
         {
             if (!IsRecurringTaskActive(task))
                 return false;
 
-            return task.Schedule.SelectedDays.Any(day => 
+            return task.Schedule.SelectedDays.Any(day =>
                 DateTime.Now.DayOfWeek == (DayOfWeek)day);
         }
 
@@ -125,7 +165,7 @@ namespace TaskBoard.Service
 
             var nextExecutionDate = task.Schedule.StartDate;
             var interval = Convert.ToInt32(task.Schedule.CustomUnit);
-          
+
             var lastExecution = GetLastTaskInstance(task);
 
             if (lastExecution != null)
@@ -155,8 +195,8 @@ namespace TaskBoard.Service
 
         private bool HasCompletedToday(UserTaskDto task)
         {
-            return task.Instances.Any(x => 
-                x.TaskId == task.TaskId && 
+            return task.Instances.Any(x =>
+                x.TaskId == task.TaskId &&
                 x.CompletedDate.Date == DateTime.Now.Date);
         }
 
@@ -184,7 +224,7 @@ namespace TaskBoard.Service
 
         private TaskInstanceDto GetLastTaskInstance(UserTaskDto task)
         {
-            if(task.Instances == null || !task.Instances.Any())
+            if (task.Instances == null || !task.Instances.Any())
                 return null;
 
             return task.Instances
@@ -193,16 +233,18 @@ namespace TaskBoard.Service
                 .FirstOrDefault();
         }
 
-        private DateTime GetNextExecutionDate(string repeatOn, DateTime lastExecutionDate, int interval) => 
+        private DateTime GetNextExecutionDate(string repeatOn, DateTime lastExecutionDate, int interval) =>
             repeatOn.ToLower() switch
             {
                 "weeks" => lastExecutionDate.AddDays(7 * interval),
                 "months" => lastExecutionDate.AddMonths(interval),
                 "years" => lastExecutionDate.AddYears(interval),
                 "days" => lastExecutionDate.AddDays(interval),
+                "daily" => lastExecutionDate.AddDays(interval),
+
                 _ => lastExecutionDate
             };
 
-       
+
     }
 }
