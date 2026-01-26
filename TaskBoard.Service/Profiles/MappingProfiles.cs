@@ -14,7 +14,11 @@ namespace TaskBoard.Service.Profiles
             CreateMap<RegisterDto, User>();
             CreateMap<AddTaskDto, UserTask>();
             CreateMap<UserTaskDto, UserTask>()
-                 .ForMember(x => x.RowCreateDate, o => o.MapFrom(u => u.Date)).ReverseMap();
+                 .ForMember(dest => dest.RowCreateDate, o => o.MapFrom(src => src.Date))
+                 .ForMember(dest => dest.TaskInstances, o => o.MapFrom(src => src.Instances))
+                 .ReverseMap()
+                 .ForMember(dest => dest.Date, o => o.MapFrom(src => src.RowCreateDate))
+                 .ForMember(dest => dest.Instances, o => o.MapFrom(src => src.TaskInstances));
 
             CreateMap<RegisterDto, UserCredential>();
             CreateMap<UserCategory, UserCategoryDto>().ReverseMap();

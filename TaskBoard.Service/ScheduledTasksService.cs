@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using TaskBoard.Data.Interfaces;
 using TaskBoard.Dto;
@@ -89,7 +91,14 @@ namespace TaskBoard.Service
 
         private bool IsOneTimeTaskPastDue(UserTaskDto task)
         {
-            return task.Schedule.StartDate.Date <= DateTime.Now.Date;
+            var startDate = task.Schedule.StartDate.Date;
+            var today = DateTime.Now.Date;
+
+            // If there is any instance completed on or after the start date, it's not past due
+            var instances = task.Instances ?? Enumerable.Empty<TaskInstanceDto>();
+            var hasCompletedOnOrAfter = instances.Any(i => i.TaskId == task.TaskId && i.CompletedDate.Date >= startDate);
+
+            return !hasCompletedOnOrAfter;
         }
 
         private bool IsOneTimeTaskDue(UserTaskDto task)
@@ -121,7 +130,7 @@ namespace TaskBoard.Service
 
             var startingDay = days[0];
 
-            if(task.Schedule.StartDate.DayOfWeek != (DayOfWeek)startingDay)
+            if (task.Schedule.StartDate.DayOfWeek != (DayOfWeek)startingDay)
             {
                 var difference = Math.Abs(Convert.ToInt32(task.Schedule.StartDate.DayOfWeek) - startingDay);
                 nextExecutionDate = nextExecutionDate.AddDays(difference);
