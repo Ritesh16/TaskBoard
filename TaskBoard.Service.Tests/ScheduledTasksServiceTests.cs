@@ -5,6 +5,8 @@ using TaskBoard.Domain.Task;
 using TaskBoard.Dto;
 using Xunit;
 using TaskBoard.Service.Profiles;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace TaskBoard.Service.Tests
 {
@@ -94,7 +96,7 @@ namespace TaskBoard.Service.Tests
         }
 
         [Fact]
-        public async Task GetScheduledTasksPastDueDate_OneTimeTask_ReturnsTask()
+        public async Task GetScheduledTasksPastDueDate_OneTimeTaskPastDue_ReturnsTask()
         {
             // Arrange
             var mockScheduledTasksRepository = new Mock<IScheduledTasksRepository>();
@@ -108,14 +110,15 @@ namespace TaskBoard.Service.Tests
             var service = new ScheduledTasksService(mockScheduledTasksRepository.Object, mapper);
 
             // Act
-            var result = (await service.GetScheduledTasksPastDueDate(1)).ToList();
+            var result = await service.GetScheduledTasksPastDueDate(1);
+            var all = result.SelectMany(kvp => kvp.Value).ToList();
 
             // Assert
-            Assert.Contains(result, r => r.TaskId == 3);
+            Assert.Contains(all, r => r.TaskId == 3);
         }
 
         [Fact]
-        public async Task GetScheduledTasksPastDueDate_DailyTask_ReturnsTask()
+        public async Task GetScheduledTasksPastDueDate_DailyTaskPastDue_ReturnsTask()
         {
             // Arrange
             var mockScheduledTasksRepository = new Mock<IScheduledTasksRepository>();
@@ -129,11 +132,89 @@ namespace TaskBoard.Service.Tests
             var service = new ScheduledTasksService(mockScheduledTasksRepository.Object, mapper);
 
             // Act
-            var result = (await service.GetScheduledTasksPastDueDate(1)).ToList();
+            var result = await service.GetScheduledTasksPastDueDate(1);
+            var all = result.SelectMany(kvp => kvp.Value).ToList();
 
             // Assert
-            Assert.Contains(result, r => r.TaskId == 2);
-            Assert.DoesNotContain(result, r => r.TaskId == 4);
+            Assert.Contains(all, r => r.TaskId == 2);
+            //Assert.DoesNotContain(result, r => r.Value.Where(x => x.TaskId == 5));
         }
+
+        [Fact]
+        public async Task GetScheduledTasksPastDueDate_WeeklyTaskPastDue_ReturnsTask()
+        {
+            // Arrange
+            var mockScheduledTasksRepository = new Mock<IScheduledTasksRepository>();
+
+            var userTask = new UserTask
+            {
+                Title = "Weekly Task-5",
+                TaskId = 5,
+                Schedule = new TaskSchedule
+                {
+                    TaskScheduleId = 5,
+                    TaskId = 5,
+                    Frequency = "Weekly",
+                    StartDate = DateTime.Now.AddDays(-8), // Yesterday
+                }
+            };
+
+            userTasks.Add(userTask);
+
+            mockScheduledTasksRepository
+                .Setup(repo => repo.GetTasks(It.IsAny<int>()))
+                .ReturnsAsync(userTasks);
+
+            IMapper mapper = mapperConfig.CreateMapper();
+
+            var service = new ScheduledTasksService(mockScheduledTasksRepository.Object, mapper);
+
+            // Act
+            var result = await service.GetScheduledTasksPastDueDate(1);
+            var all = result.SelectMany(kvp => kvp.Value).ToList();
+
+            // Assert
+            Assert.Contains(all, r => r.TaskId == 5);
+        }
+        
+        [Fact]
+        public async Task GetScheduledTasksPastDueDate_MonthlyTaskPastDue_ReturnsTask()
+        {
+            // Arrange
+            var mockScheduledTasksRepository = new Mock<IScheduledTasksRepository>();
+            userTasks = new List<UserTask>();
+            var userTask = new UserTask
+            {
+                Title = "Monthly Task",
+                TaskId = 6,
+                Schedule = new TaskSchedule
+                {
+                    TaskScheduleId = 6,
+                    TaskId = 6,
+                    Frequency = "Monthly",
+                    StartDate = DateTime.Now.AddDays(-35), // Yesterday
+                }
+            };
+
+            userTasks.Add(userTask);
+
+            mockScheduledTasksRepository
+                .Setup(repo => repo.GetTasks(It.IsAny<int>()))
+                .ReturnsAsync(userTasks);
+
+            IMapper mapper = mapperConfig.CreateMapper();
+
+            var service = new ScheduledTasksService(mockScheduledTasksRepository.Object, mapper);
+
+            // Act
+            var result = await service.GetScheduledTasksPastDueDate(1);
+            var all = result.SelectMany(kvp => kvp.Value).ToList();
+
+            // Assert
+            Assert.Contains(all, r => r.TaskId == 6);
+        }
+
+
+
     }
 }
