@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using System.Collections.Generic;
+using System.Linq;
 using TaskBoard.Data.Interfaces;
 using TaskBoard.Domain.Task;
 using TaskBoard.Dto;
-using Xunit;
 using TaskBoard.Service.Profiles;
-using System.Linq;
-using System.Collections.Generic;
+using Xunit;
 
 namespace TaskBoard.Service.Tests
 {
@@ -91,8 +92,11 @@ namespace TaskBoard.Service.Tests
                 },
             };
 
-            mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile(new MappingProfiles()));
-
+            //mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile(new MappingProfiles()));
+            mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new MappingProfiles());
+            }, NullLoggerFactory.Instance);
         }
 
         [Fact]

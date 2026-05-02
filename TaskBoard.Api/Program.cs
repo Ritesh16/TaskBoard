@@ -41,7 +41,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-builder.Services.AddAutoMapper(typeof(MappingProfiles));
+//builder.Services.AddAutoMapper(typeof(MappingProfiles));
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<MappingProfiles>();
+});
 
 var connectionString = configuration.GetConnectionString("Default");
 if(string.IsNullOrEmpty(connectionString))
