@@ -30,8 +30,8 @@ namespace TaskBoard.Service
             var data = scheduledTasksDto
                 .Where(task => task.Schedule != null)
                 .Where(task => !HasCompletedToday(task))
-                 .Select(task => new { Task = task, Check = GetScheduleCheck(task) })
-                .Where(x => x.Check.IsPastDue && x.Check.ScheduledDate.HasValue)
+                 .Select(task => new { Task = task, Check = CheckIfTaskIsDueToday(task) })
+                .Where(x => x.Check.IsTaskDue && x.Check.ScheduledDate.HasValue)
                 .Select(x => new
                 {
                     x.Task,
@@ -57,7 +57,7 @@ namespace TaskBoard.Service
                 .Where(task => !HasCompletedToday(task))
                 // project to include both the check result (bool) and computed date
                 .Select(task => new { Task = task, Check = GetScheduleCheck(task) })
-                .Where(x => x.Check.IsPastDue && x.Check.ScheduledDate.HasValue)
+                .Where(x => x.Check.IsTaskDue && x.Check.ScheduledDate.HasValue)
                 .Select(x => new
                 {
                     x.Task,
@@ -71,6 +71,20 @@ namespace TaskBoard.Service
                 .ToDictionary(g => g.Key, g => g.Select(x => x.Task).ToList());
 
             return grouped;
+        }
+
+        private ScheduleCheckResult CheckIfTaskIsDueToday(UserTaskDto task)
+        {
+            var nextScheduledDate = GetTaskScheduleDate(task);
+            var result = nextScheduledDate.HasValue && nextScheduledDate.Value.Date == DateTime.Now.Date;
+            if (result)
+            {
+                return new ScheduleCheckResult(true, nextScheduledDate);
+            }
+            else
+            {
+                return new ScheduleCheckResult(false, null);
+            }
         }
 
         private ScheduleCheckResult GetScheduleCheck(UserTaskDto task)
@@ -100,8 +114,6 @@ namespace TaskBoard.Service
                 _ => null
             };
         }
-
-        private record ScheduleCheckResult(bool IsPastDue, DateTime? ScheduledDate);
 
         private DateTime? GetScheduledDateOfCustomTask(UserTaskDto task)
         {

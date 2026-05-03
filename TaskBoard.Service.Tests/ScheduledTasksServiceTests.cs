@@ -406,6 +406,120 @@ namespace TaskBoard.Service.Tests
             Assert.Contains(all, r => r.TaskId == 8);
         }
 
+        [Fact]
+        public async Task GetScheduledTasksDueToday_NoOneTimeTaskFound_NoTaskFound()
+        {
+            // Arrange
+            var mockScheduledTasksRepository = new Mock<IScheduledTasksRepository>();
+
+            mockScheduledTasksRepository
+                .Setup(repo => repo.GetTasks(It.IsAny<int>()))
+                .ReturnsAsync(userTasks);
+
+            IMapper mapper = mapperConfig.CreateMapper();
+
+            var service = new ScheduledTasksService(mockScheduledTasksRepository.Object, mapper);
+
+            // Act
+            var result = await service.GetScheduledTasksForToday(1);
+            var all = result.SelectMany(kvp => kvp.Value).ToList();
+
+            // Assert
+            Assert.Equal(0, all.Count);
+        }
+
+        [Fact]
+        public async Task GetScheduledTasksDueToday_OneTimeTaskDueToday_TaskFound()
+        {
+            // Arrange
+            var mockScheduledTasksRepository = new Mock<IScheduledTasksRepository>();
+
+            var userTask = new UserTask
+            {
+                Title = "OneTime Task",
+                TaskId = 100,
+                Schedule = new TaskSchedule
+                {
+                    TaskScheduleId = 100,
+                    TaskId = 100,
+                    Frequency = "OneTime",
+                    StartDate = DateTime.Now, // Yesterday
+                }
+            };
+
+            userTasks.Add(userTask);
+
+            mockScheduledTasksRepository
+                .Setup(repo => repo.GetTasks(It.IsAny<int>()))
+                .ReturnsAsync(userTasks);
+
+            IMapper mapper = mapperConfig.CreateMapper();
+
+            var service = new ScheduledTasksService(mockScheduledTasksRepository.Object, mapper);
+
+            // Act
+            var result = await service.GetScheduledTasksForToday(1);
+            var all = result.SelectMany(kvp => kvp.Value).ToList();
+
+            // Assert
+            Assert.Contains(all, r => r.TaskId == 100);
+        }
+
+        [Fact]
+        public async Task GetScheduledTasksDueToday_DailyTaskDueToday_TaskFound()
+        {
+            // Arrange
+            var mockScheduledTasksRepository = new Mock<IScheduledTasksRepository>();
+
+            var userTask = new UserTask
+            {
+                Title = "Daily Task",
+                TaskId = 100,
+                Schedule = new TaskSchedule
+                {
+                    TaskScheduleId = 100,
+                    TaskId = 100,
+                    Frequency = "Daily",
+                    StartDate = DateTime.Now.AddDays(-2), // Yesterday
+                },
+                TaskInstances = new List<TaskInstance>()
+                   {
+                       new TaskInstance
+                       {
+                           CompletedDate = DateTime.Now.AddDays(-2),
+                           RowCreateDate = DateTime.Now,
+                           TaskId=100,
+                           TaskInstanceId = 1,
+                           TaskScheduleId=1
+                       },
+                       new TaskInstance
+                       {
+                           CompletedDate = DateTime.Now.AddDays(-1),
+                           RowCreateDate = DateTime.Now,
+                           TaskId=100,
+                           TaskInstanceId = 1,
+                           TaskScheduleId=1
+                       }
+                   }
+            };
+
+            userTasks.Add(userTask);
+
+            mockScheduledTasksRepository
+                .Setup(repo => repo.GetTasks(It.IsAny<int>()))
+                .ReturnsAsync(userTasks);
+
+            IMapper mapper = mapperConfig.CreateMapper();
+
+            var service = new ScheduledTasksService(mockScheduledTasksRepository.Object, mapper);
+
+            // Act
+            var result = await service.GetScheduledTasksForToday(1);
+            var all = result.SelectMany(kvp => kvp.Value).ToList();
+
+            // Assert
+            Assert.Contains(all, r => r.TaskId == 100);
+        }
 
     }
 }
