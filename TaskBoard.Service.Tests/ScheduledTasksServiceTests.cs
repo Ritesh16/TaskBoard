@@ -90,6 +90,49 @@ namespace TaskBoard.Service.Tests
                        }
                    }
                 },
+                new UserTask
+                {
+                Title = "Daily Task",
+                TaskId = 100,
+                Schedule = new TaskSchedule
+                {
+                    TaskScheduleId = 100,
+                    TaskId = 100,
+                    Frequency = "Daily",
+                    StartDate = DateTime.Now.AddDays(-2), // Yesterday
+                },
+                TaskInstances = new List<TaskInstance>()
+                   {
+                       new TaskInstance
+                       {
+                           CompletedDate = DateTime.Now.AddDays(-2),
+                           RowCreateDate = DateTime.Now,
+                           TaskId=100,
+                           TaskInstanceId = 1,
+                           TaskScheduleId=1
+                       },
+                       new TaskInstance
+                       {
+                           CompletedDate = DateTime.Now.AddDays(-1),
+                           RowCreateDate = DateTime.Now,
+                           TaskId=100,
+                           TaskInstanceId = 1,
+                           TaskScheduleId=1
+                       }
+                   }
+            },
+                new UserTask
+            {
+                Title = "Weekly Task",
+                TaskId = 101,
+                Schedule = new TaskSchedule
+                {
+                    TaskScheduleId = 101,
+                    TaskId = 101,
+                    Frequency = "Weekly",
+                    StartDate = DateTime.Now.AddDays(-7), // Yesterday
+                }
+            }
             };
 
             //mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile(new MappingProfiles()));
@@ -180,7 +223,7 @@ namespace TaskBoard.Service.Tests
             // Assert
             Assert.Contains(all, r => r.TaskId == 5);
         }
-        
+
         [Fact]
         public async Task GetScheduledTasksPastDueDate_MonthlyTaskPastDue_ReturnsTask()
         {
@@ -412,6 +455,9 @@ namespace TaskBoard.Service.Tests
             // Arrange
             var mockScheduledTasksRepository = new Mock<IScheduledTasksRepository>();
 
+            var userTask = userTasks.FirstOrDefault(t => t.TaskId == 100);
+            userTasks.Remove(userTask);
+
             mockScheduledTasksRepository
                 .Setup(repo => repo.GetTasks(It.IsAny<int>()))
                 .ReturnsAsync(userTasks);
@@ -471,40 +517,6 @@ namespace TaskBoard.Service.Tests
             // Arrange
             var mockScheduledTasksRepository = new Mock<IScheduledTasksRepository>();
 
-            var userTask = new UserTask
-            {
-                Title = "Daily Task",
-                TaskId = 100,
-                Schedule = new TaskSchedule
-                {
-                    TaskScheduleId = 100,
-                    TaskId = 100,
-                    Frequency = "Daily",
-                    StartDate = DateTime.Now.AddDays(-2), // Yesterday
-                },
-                TaskInstances = new List<TaskInstance>()
-                   {
-                       new TaskInstance
-                       {
-                           CompletedDate = DateTime.Now.AddDays(-2),
-                           RowCreateDate = DateTime.Now,
-                           TaskId=100,
-                           TaskInstanceId = 1,
-                           TaskScheduleId=1
-                       },
-                       new TaskInstance
-                       {
-                           CompletedDate = DateTime.Now.AddDays(-1),
-                           RowCreateDate = DateTime.Now,
-                           TaskId=100,
-                           TaskInstanceId = 1,
-                           TaskScheduleId=1
-                       }
-                   }
-            };
-
-            userTasks.Add(userTask);
-
             mockScheduledTasksRepository
                 .Setup(repo => repo.GetTasks(It.IsAny<int>()))
                 .ReturnsAsync(userTasks);
@@ -521,5 +533,113 @@ namespace TaskBoard.Service.Tests
             Assert.Contains(all, r => r.TaskId == 100);
         }
 
+        [Fact]
+        public async Task GetScheduledWeeklyTasksDueToday_WithNoInstances_TaskFound()
+        {
+            // Arrange
+            var mockScheduledTasksRepository = new Mock<IScheduledTasksRepository>();
+            var userTask = userTasks.FirstOrDefault(x => x.TaskId == 101);
+         
+            //userTasks = new List<UserTask> { userTask };
+            mockScheduledTasksRepository
+                .Setup(repo => repo.GetTasks(It.IsAny<int>()))
+                .ReturnsAsync(userTasks);
+
+            IMapper mapper = mapperConfig.CreateMapper();
+
+            var service = new ScheduledTasksService(mockScheduledTasksRepository.Object, mapper);
+
+            // Act
+            var result = await service.GetScheduledTasksForToday(1);
+            var all = result.SelectMany(kvp => kvp.Value).ToList();
+
+            // Assert
+            Assert.Contains(all, r => r.TaskId == 101);
+        }
+
+        [Fact]
+        public async Task GetScheduledWeeklyTasksDueToday_WithInstances_TaskFound()
+        {
+            // Arrange
+            var mockScheduledTasksRepository = new Mock<IScheduledTasksRepository>();
+            var userTask = new UserTask
+            {
+                Title = "Weekly Task",
+                TaskId = 101,
+                Schedule = new TaskSchedule
+                {
+                    TaskScheduleId = 101,
+                    TaskId = 101,
+                    Frequency = "Weekly",
+                    StartDate = DateTime.Now.AddDays(-14), // Yesterday
+                },
+                TaskInstances = new List<TaskInstance>()
+                {
+                    new TaskInstance
+                    {
+                        CompletedDate = DateTime.Now.AddDays(-7),
+                        RowCreateDate = DateTime.Now,
+                        TaskId=101,
+                        TaskInstanceId = 1,
+                        TaskScheduleId=101
+                    }
+                }
+            };
+
+            userTasks.Add(userTask);
+
+            //userTasks = new List<UserTask> { userTask };
+            mockScheduledTasksRepository
+                .Setup(repo => repo.GetTasks(It.IsAny<int>()))
+                .ReturnsAsync(userTasks);
+
+            IMapper mapper = mapperConfig.CreateMapper();
+
+            var service = new ScheduledTasksService(mockScheduledTasksRepository.Object, mapper);
+
+            // Act
+            var result = await service.GetScheduledTasksForToday(1);
+            var all = result.SelectMany(kvp => kvp.Value).ToList();
+
+            // Assert
+            Assert.Contains(all, r => r.TaskId == 101);
+        }
+
+        [Fact]
+        public async Task GetScheduledMonthlyTasksDueToday_WithNoInstances_TaskFound()
+        {
+            // Arrange
+            var mockScheduledTasksRepository = new Mock<IScheduledTasksRepository>();
+            var userTask = new UserTask
+            {
+                Title = "Weekly Task",
+                TaskId = 101,
+                Schedule = new TaskSchedule
+                {
+                    TaskScheduleId = 101,
+                    TaskId = 101,
+                    Frequency = "Weekly",
+                    StartDate = DateTime.Now.AddDays(-7), // Yesterday
+                }
+            };
+
+            userTasks.Add(userTask);
+
+            //userTasks = new List<UserTask> { userTask };
+            mockScheduledTasksRepository
+                .Setup(repo => repo.GetTasks(It.IsAny<int>()))
+                .ReturnsAsync(userTasks);
+
+            IMapper mapper = mapperConfig.CreateMapper();
+
+            var service = new ScheduledTasksService(mockScheduledTasksRepository.Object, mapper);
+
+            // Act
+            var result = await service.GetScheduledTasksForToday(1);
+            var all = result.SelectMany(kvp => kvp.Value).ToList();
+
+            // Assert
+            Assert.Contains(all, r => r.TaskId == 101);
+        }
     }
 }

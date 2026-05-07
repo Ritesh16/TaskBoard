@@ -225,7 +225,7 @@ namespace TaskBoard.Service
                 nextExecutionDate = GetNextExecutionDate("daily", lastExecution.CompletedDate, 1);
             }
 
-            scheduledDate = nextExecutionDate.Date < DateTime.Today ? nextExecutionDate : null;
+            scheduledDate = nextExecutionDate.Date <= DateTime.Today ? nextExecutionDate : null;
             return scheduledDate;
         }
 
